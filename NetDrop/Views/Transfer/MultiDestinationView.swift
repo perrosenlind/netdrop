@@ -6,11 +6,12 @@ struct MultiDestinationView: View {
     @Environment(TransferManager.self) private var transferManager
     @Environment(\.dismiss) private var dismiss
 
+    enum PickerMode { case files, ipList }
+
     @State private var selectedFavoriteIDs: Set<UUID> = []
     @State private var localPaths: [String] = []
-    @State private var showingFilePicker = false
-    @State private var showingIPImporter = false
-    @State private var pendingIPFile: URL?
+    @State private var pickerMode: PickerMode = .files
+    @State private var showingPicker = false
     @State private var importedHosts: [AdHocHost] = []
     @State private var selectedImportedIDs: Set<UUID> = []
     @State private var importUsername: String = "admin"
@@ -75,7 +76,8 @@ struct MultiDestinationView: View {
                     }
 
                     Button("Add Files…") {
-                        showingFilePicker = true
+                        pickerMode = .files
+                        showingPicker = true
                     }
                 }
                 .padding()
@@ -163,7 +165,8 @@ struct MultiDestinationView: View {
                         }
                         Spacer()
                         Button("Import IPs…") {
-                            showingIPImporter = true
+                            pickerMode = .ipList
+                            showingPicker = true
                         }
                     }
                 }
@@ -189,30 +192,20 @@ struct MultiDestinationView: View {
         }
         .frame(width: 680, height: 500)
         .fileImporter(
-            isPresented: $showingFilePicker,
-            allowedContentTypes: [.item],
-            allowsMultipleSelection: true
+            isPresented: $showingPicker,
+            allowedContentTypes: pickerMode == .files ? [.item] : [.text, .plainText, .commaSeparatedText, .data],
+            allowsMultipleSelection: pickerMode == .files
         ) { result in
-            if case .success(let urls) = result {
-                let newPaths = urls.map(\.path)
-                for path in newPaths where !localPaths.contains(path) {
-                    localPaths.append(path)
+            guard case .success(let urls) = result else { return }
+            switch pickerMode {
+            case .files:
+                for url in urls where !localPaths.contains(url.path) {
+                    localPaths.append(url.path)
                 }
-            }
-        }
-        .fileImporter(
-            isPresented: $showingIPImporter,
-            allowedContentTypes: [.text, .plainText, .commaSeparatedText, .data],
-            allowsMultipleSelection: false
-        ) { result in
-            if case .success(let urls) = result, let url = urls.first {
-                pendingIPFile = url
-            }
-        }
-        .onChange(of: pendingIPFile) { _, url in
-            if let url {
-                importIPList(from: url)
-                pendingIPFile = nil
+            case .ipList:
+                if let url = urls.first {
+                    importIPList(from: url)
+                }
             }
         }
     }
