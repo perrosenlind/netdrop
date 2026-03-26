@@ -10,6 +10,7 @@ struct MultiDestinationView: View {
     @State private var localPaths: [String] = []
     @State private var showingFilePicker = false
     @State private var showingIPImporter = false
+    @State private var pendingIPFile: URL?
     @State private var importedHosts: [AdHocHost] = []
     @State private var selectedImportedIDs: Set<UUID> = []
     @State private var importUsername: String = "admin"
@@ -201,34 +202,31 @@ struct MultiDestinationView: View {
         }
         .fileImporter(
             isPresented: $showingIPImporter,
-            allowedContentTypes: [.text, .plainText, .commaSeparatedText],
+            allowedContentTypes: [.text, .plainText, .commaSeparatedText, .data],
             allowsMultipleSelection: false
         ) { result in
             if case .success(let urls) = result, let url = urls.first {
+                pendingIPFile = url
+            }
+        }
+        .onChange(of: pendingIPFile) { _, url in
+            if let url {
                 importIPList(from: url)
+                pendingIPFile = nil
             }
         }
     }
 
     private func importIPList(from url: URL) {
+        let accessing = url.startAccessingSecurityScopedResource()
+        defer { if accessing { url.stopAccessingSecurityScopedResource() } }
+
         guard let content = try? String(contentsOf: url, encoding: .utf8) else { return }
 
         let existingAddresses = Set(importedHosts.map(\.address))
-        let lines = content.components(separatedBy: .newlines)
+        let addresses = IPListParser.parse(content)
 
-        for line in lines {
-            // Support: bare IPs, "ip,name" CSV, "ip;name", "ip\tname", comments with #
-            let trimmed = line.trimmingCharacters(in: .whitespaces)
-            guard !trimmed.isEmpty, !trimmed.hasPrefix("#") else { continue }
-
-            // Take first field (split by comma, semicolon, tab, or space)
-            let address = trimmed
-                .components(separatedBy: CharacterSet(charactersIn: ",;\t "))
-                .first?
-                .trimmingCharacters(in: .whitespaces) ?? ""
-
-            guard !address.isEmpty, !existingAddresses.contains(address) else { continue }
-
+        for address in addresses where !existingAddresses.contains(address) {
             let host = AdHocHost(address: address)
             importedHosts.append(host)
             selectedImportedIDs.insert(host.id)
