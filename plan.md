@@ -148,7 +148,7 @@ A lightweight macOS GUI for SCP transfers, aimed at network engineers who work w
 - [x] Notifications on transfer complete
 
 ### Phase 4 — Nice to have
-- [ ] Bulk config backup scheduler (cron-like, SSH in and pull configs)
+- [x] Bulk config backup scheduler (cron-like, SSH in and pull configs)
 - [ ] Side-by-side diff for config files
 - [ ] Integration with FortiManager API for device inventory import
 - [ ] Homebrew cask for distribution

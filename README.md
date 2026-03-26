@@ -22,6 +22,7 @@ A lightweight native macOS app for SCP file transfers, built for network enginee
 - **Keyboard Shortcuts** — Cmd+N (new connection), Cmd+K (quick connect), Cmd+U (upload), Cmd+Shift+M (multi-device), Cmd+, (settings).
 - **Notifications** — macOS notifications on transfer complete or failure with error details.
 - **Dark/Light Mode** — System, Light, or Dark theme via Settings (Cmd+,).
+- **Config Backup Scheduler** — Schedule automatic config pulls from devices on intervals (15min to daily). Run SSH commands, save output with timestamps. View results and status per job.
 - **Welcome Screen** — Action cards and shortcut reference when no connection is selected.
 
 ## Requirements
@@ -57,7 +58,7 @@ xcodebuild -project NetDrop.xcodeproj -scheme NetDrop -configuration Debug build
 xcodebuild -project NetDrop.xcodeproj -scheme NetDropTests -configuration Debug test
 ```
 
-65 unit tests covering all models, services, and stores:
+69 unit tests covering all models, services, and stores:
 
 | Suite | Tests | Coverage |
 |---|---|---|
@@ -71,6 +72,7 @@ xcodebuild -project NetDrop.xcodeproj -scheme NetDropTests -configuration Debug 
 | SSHServiceTests | 4 | ls/mkdir/rm/rename with real ssh |
 | TransferTaskTests | 4 | Init, cancel, process attachment, properties |
 | TransferRecordTests | 4 | Defaults, Codable, directions, statuses |
+| BackupJobTests | 4 | Defaults, Codable round-trip, result model, statuses |
 
 ## Architecture
 

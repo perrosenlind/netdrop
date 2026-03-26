@@ -5,6 +5,7 @@ struct NetDropApp: App {
     @State private var favoritesStore = FavoritesStore()
     @State private var transferManager = TransferManager()
     @State private var appSettings = AppSettings()
+    @State private var backupScheduler: BackupScheduler?
 
     var body: some Scene {
         WindowGroup {
@@ -12,7 +13,13 @@ struct NetDropApp: App {
                 .environment(favoritesStore)
                 .environment(transferManager)
                 .environment(appSettings)
+                .optionalEnvironment(backupScheduler)
                 .preferredColorScheme(appSettings.preferredColorScheme)
+                .onAppear {
+                    if backupScheduler == nil {
+                        backupScheduler = BackupScheduler(favoritesStore: favoritesStore)
+                    }
+                }
         }
         .defaultSize(width: 900, height: 600)
         .commands {
@@ -60,4 +67,16 @@ extension Notification.Name {
     static let showQuickConnect = Notification.Name("showQuickConnect")
     static let showMultiDestination = Notification.Name("showMultiDestination")
     static let triggerUpload = Notification.Name("triggerUpload")
+}
+
+// Helper to pass optional environment objects
+extension View {
+    @ViewBuilder
+    func optionalEnvironment<T: AnyObject & Observable>(_ object: T?) -> some View {
+        if let object {
+            self.environment(object)
+        } else {
+            self
+        }
+    }
 }

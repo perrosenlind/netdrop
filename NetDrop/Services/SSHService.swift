@@ -1,6 +1,14 @@
 import Foundation
 
 struct SSHService {
+    /// Run an arbitrary command on the remote host and return output
+    static func runCommand(
+        command: String,
+        favorite: Favorite
+    ) async throws -> (output: String, exitCode: Int32) {
+        try await runSSH(command: command, favorite: favorite)
+    }
+
     /// List remote directory contents via SSH
     static func listDirectory(
         path: String,

@@ -7,6 +7,7 @@ struct ContentView: View {
     @State private var showingAddFavorite = false
     @State private var showingQuickConnect = false
     @State private var showingMultiDestination = false
+    @State private var showingBackupScheduler = false
     @State private var editingFavorite: Favorite?
 
     var body: some View {
@@ -37,6 +38,10 @@ struct ContentView: View {
         .sheet(isPresented: $showingMultiDestination) {
             MultiDestinationView()
         }
+        .sheet(isPresented: $showingBackupScheduler) {
+            BackupSchedulerView()
+                .frame(width: 600, height: 500)
+        }
         .sheet(item: $editingFavorite) { favorite in
             FavoriteEditView(mode: .edit(favorite))
         }
@@ -61,6 +66,16 @@ struct ContentView: View {
                     }
                 }
                 .help("Upload files to multiple devices (Cmd+Shift+M)")
+
+                Button {
+                    showingBackupScheduler = true
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "clock.arrow.circlepath")
+                        Text("Backups")
+                    }
+                }
+                .help("Schedule config backups from devices")
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .showAddFavorite)) { _ in

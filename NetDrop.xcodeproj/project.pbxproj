@@ -19,9 +19,11 @@
 		44FA41419124624610198620 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD3954DAAD4ECBD4DDFB46E5 /* KeychainService.swift */; };
 		47BF519CA966872385F8A160 /* TransferRecordTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB7D62364C018F6E9E8563FD /* TransferRecordTests.swift */; };
 		48D56C12870C31232C66BB22 /* FavoriteModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A57C214B6E360CDCDDFF208 /* FavoriteModelTests.swift */; };
+		4C1E225399DED8E9CE98D53D /* BackupScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A92CF551A8BA310B7EA617F /* BackupScheduler.swift */; };
 		59D58B81A9EFFC4BAB9EF875 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A64EAF9ADBB031252CB3FD0 /* SettingsView.swift */; };
 		6C66A92507BCACD4579A7862 /* TransferManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBFBE56404F98BB41811F287 /* TransferManagerTests.swift */; };
 		6E51FB4FE70F81FDAF088EB0 /* TransferManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23373917EBED54D87B1D5928 /* TransferManager.swift */; };
+		7D73E2F76EF74FC7B2460608 /* BackupJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = E618252C25C4FDD2F3A61B9D /* BackupJob.swift */; };
 		7DDD9E08D35E52E64D38D2D5 /* MultiDestinationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF69E83C230B1994A6947275 /* MultiDestinationView.swift */; };
 		80BDF9BDBD28A23BEAFC8ED2 /* SCPServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4041F281094F67EA8B88E617 /* SCPServiceTests.swift */; };
 		864C34A7A3462293BC56D44B /* AppSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46AD79BCF631E766037DB1DC /* AppSettingsTests.swift */; };
@@ -31,9 +33,11 @@
 		A202BD27A391B921B4E2DB6E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDD68B9951BB8984A53A50AC /* ContentView.swift */; };
 		AF8E03106C6C726335B961B9 /* IPListParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9367F3CB4873FE8C36F7474D /* IPListParserTests.swift */; };
 		AF9F91BF7629E53137A043D2 /* TransferView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09749137438B83A60DD95755 /* TransferView.swift */; };
+		B42980DF5BA443053D8461BB /* BackupSchedulerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A4CFB6887DE0BEAD1787D8 /* BackupSchedulerView.swift */; };
 		B4D774D5F65BF93E7AFDCABA /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F49811148AB38C70829F13D /* MenuBarView.swift */; };
 		B5B0CCC21651AC6686E4146E /* FavoritesStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89D52B2EE7101D645C36AAEF /* FavoritesStore.swift */; };
 		B7C27A7A3F16B5B4E098D089 /* SSHServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C17DDEACCF28635174B3131 /* SSHServiceTests.swift */; };
+		C318DE0E63A5D6111E55AA60 /* BackupJobTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE82DD1B87CA4F4BF3EB1A6 /* BackupJobTests.swift */; };
 		CBFA877F7CBABD9E9C54AC91 /* RemoteFileEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AB82093A82D2C77DB6629B8 /* RemoteFileEntry.swift */; };
 		D90CBA909E20AB297319CA66 /* Favorite.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A8D9CA645DFDC980761DEA /* Favorite.swift */; };
 		E197679984A5E0950E83A57D /* TransferTaskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 080F17F93091EDD1CB3F76F6 /* TransferTaskTests.swift */; };
@@ -57,6 +61,7 @@
 /* Begin PBXFileReference section */
 		080F17F93091EDD1CB3F76F6 /* TransferTaskTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferTaskTests.swift; sourceTree = "<group>"; };
 		087FC28E470232F1B2287C0F /* FavoriteEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteEditView.swift; sourceTree = "<group>"; };
+		08A4CFB6887DE0BEAD1787D8 /* BackupSchedulerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupSchedulerView.swift; sourceTree = "<group>"; };
 		09749137438B83A60DD95755 /* TransferView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferView.swift; sourceTree = "<group>"; };
 		118659F6EB13DB3265B9FF81 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		1966A8C5E300423783CDC408 /* NetDrop.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NetDrop.entitlements; sourceTree = "<group>"; };
@@ -77,6 +82,7 @@
 		7F49811148AB38C70829F13D /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
 		89D52B2EE7101D645C36AAEF /* FavoritesStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesStore.swift; sourceTree = "<group>"; };
 		8A2B6FB0C8F2ACE4EDE24D6E /* SidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarView.swift; sourceTree = "<group>"; };
+		8A92CF551A8BA310B7EA617F /* BackupScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupScheduler.swift; sourceTree = "<group>"; };
 		8C17DDEACCF28635174B3131 /* SSHServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHServiceTests.swift; sourceTree = "<group>"; };
 		9367F3CB4873FE8C36F7474D /* IPListParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPListParserTests.swift; sourceTree = "<group>"; };
 		B8289BF2EEB758EBF0BB28FB /* QuickConnectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickConnectView.swift; sourceTree = "<group>"; };
@@ -86,8 +92,10 @@
 		C742E5B581582B799768DF95 /* TransferRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferRecord.swift; sourceTree = "<group>"; };
 		C954BF0D876AC40505BA23F0 /* SSHService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHService.swift; sourceTree = "<group>"; };
 		CBFBE56404F98BB41811F287 /* TransferManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferManagerTests.swift; sourceTree = "<group>"; };
+		CEE82DD1B87CA4F4BF3EB1A6 /* BackupJobTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupJobTests.swift; sourceTree = "<group>"; };
 		DB7D62364C018F6E9E8563FD /* TransferRecordTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferRecordTests.swift; sourceTree = "<group>"; };
 		E1407FA2F044F51321BC716D /* IPListParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPListParser.swift; sourceTree = "<group>"; };
+		E618252C25C4FDD2F3A61B9D /* BackupJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupJob.swift; sourceTree = "<group>"; };
 		F565C6DF27919BA953EFFB7E /* TransferListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferListView.swift; sourceTree = "<group>"; };
 		F64BFCB489D0D91A73C4C689 /* NetDropApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetDropApp.swift; sourceTree = "<group>"; };
 		F8A8D9CA645DFDC980761DEA /* Favorite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Favorite.swift; sourceTree = "<group>"; };
@@ -100,6 +108,7 @@
 			isa = PBXGroup;
 			children = (
 				46AD79BCF631E766037DB1DC /* AppSettingsTests.swift */,
+				CEE82DD1B87CA4F4BF3EB1A6 /* BackupJobTests.swift */,
 				2A57C214B6E360CDCDDFF208 /* FavoriteModelTests.swift */,
 				57175CEEAC58E7000F8E24BE /* FavoritesStoreTests.swift */,
 				9367F3CB4873FE8C36F7474D /* IPListParserTests.swift */,
@@ -136,6 +145,7 @@
 		6FC2D1912024414439700FE0 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				08A4CFB6887DE0BEAD1787D8 /* BackupSchedulerView.swift */,
 				4A64EAF9ADBB031252CB3FD0 /* SettingsView.swift */,
 			);
 			path = Settings;
@@ -189,6 +199,7 @@
 		EF3D8745415518C9FDD35A8B /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				8A92CF551A8BA310B7EA617F /* BackupScheduler.swift */,
 				442A105ECABC8B5E2AD8ECC5 /* ConnectionTester.swift */,
 				89D52B2EE7101D645C36AAEF /* FavoritesStore.swift */,
 				E1407FA2F044F51321BC716D /* IPListParser.swift */,
@@ -204,6 +215,7 @@
 			isa = PBXGroup;
 			children = (
 				5F90D2C429F505FAE6891EAC /* AppSettings.swift */,
+				E618252C25C4FDD2F3A61B9D /* BackupJob.swift */,
 				F8A8D9CA645DFDC980761DEA /* Favorite.swift */,
 				7AB82093A82D2C77DB6629B8 /* RemoteFileEntry.swift */,
 				C742E5B581582B799768DF95 /* TransferRecord.swift */,
@@ -299,6 +311,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				864C34A7A3462293BC56D44B /* AppSettingsTests.swift in Sources */,
+				C318DE0E63A5D6111E55AA60 /* BackupJobTests.swift in Sources */,
 				48D56C12870C31232C66BB22 /* FavoriteModelTests.swift in Sources */,
 				95E8335F2C8487FC074C479B /* FavoritesStoreTests.swift in Sources */,
 				AF8E03106C6C726335B961B9 /* IPListParserTests.swift in Sources */,
@@ -316,6 +329,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				2E44C7F3436031E33B9C45BB /* AppSettings.swift in Sources */,
+				7D73E2F76EF74FC7B2460608 /* BackupJob.swift in Sources */,
+				4C1E225399DED8E9CE98D53D /* BackupScheduler.swift in Sources */,
+				B42980DF5BA443053D8461BB /* BackupSchedulerView.swift in Sources */,
 				4042548C9FE37FB1D5A07697 /* ConnectionTester.swift in Sources */,
 				A202BD27A391B921B4E2DB6E /* ContentView.swift in Sources */,
 				D90CBA909E20AB297319CA66 /* Favorite.swift in Sources */,
