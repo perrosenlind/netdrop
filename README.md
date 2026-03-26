@@ -95,7 +95,25 @@ See [plan.md](plan.md) for the full phased roadmap.
 - [x] Phase 1 — MVP: Favorites, single-file transfer, transfer log, quick connect
 - [x] Phase 2 — Remote file browser, multi-file queue, drag-and-drop, multi-destination, progress parsing
 - [x] Phase 3 — History search, keyboard shortcuts, menubar quick-upload, notifications, dark/light mode, password auth
-- [ ] Phase 4 — Config backup scheduler, diff viewer, FortiManager integration
+- [x] Phase 4 — Config backup scheduler, diff viewer, Homebrew cask
+
+## Installation (Homebrew)
+
+Once a release is published:
+
+```bash
+brew install --cask perrosenlind/tap/netdrop
+```
+
+Or build from source (see Getting Started above).
+
+## Release Build
+
+```bash
+./scripts/build-release.sh
+# Then create a GitHub release:
+gh release create v0.1.0 NetDrop.app.zip --title 'NetDrop v0.1.0'
+```
 
 ## License
 
