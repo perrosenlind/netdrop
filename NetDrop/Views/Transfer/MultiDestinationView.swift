@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct MultiDestinationView: View {
     @Environment(FavoritesStore.self) private var favoritesStore
@@ -8,6 +9,21 @@ struct MultiDestinationView: View {
     @State private var selectedFavoriteIDs: Set<UUID> = []
     @State private var localPaths: [String] = []
     @State private var showingFilePicker = false
+    @State private var showingIPImporter = false
+    @State private var importedHosts: [AdHocHost] = []
+    @State private var selectedImportedIDs: Set<UUID> = []
+    @State private var importUsername: String = "admin"
+    @State private var importRemotePath: String = "/"
+
+    /// Temporary host parsed from an IP list (not saved as a favorite)
+    struct AdHocHost: Identifiable, Hashable {
+        let id = UUID()
+        let address: String
+    }
+
+    private var totalDestinations: Int {
+        selectedFavoriteIDs.count + selectedImportedIDs.count
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -71,52 +87,93 @@ struct MultiDestinationView: View {
                     Text("Destinations")
                         .font(.headline)
 
-                    if favoritesStore.favorites.isEmpty {
-                        ContentUnavailableView {
-                            Label("No Favorites", systemImage: "star")
-                        } description: {
-                            Text("Add favorites first.")
-                        }
-                        .frame(maxHeight: .infinity)
-                    } else {
-                        List(selection: $selectedFavoriteIDs) {
-                            ForEach(favoritesStore.groups, id: \.self) { group in
-                                Section(group) {
-                                    ForEach(favoritesStore.favorites(inGroup: group)) { fav in
+                    List {
+                        // Saved favorites
+                        if !favoritesStore.favorites.isEmpty {
+                            Section("Favorites") {
+                                ForEach(favoritesStore.favorites) { fav in
+                                    HStack {
+                                        Image(systemName: selectedFavoriteIDs.contains(fav.id) ? "checkmark.circle.fill" : "circle")
+                                            .foregroundColor(selectedFavoriteIDs.contains(fav.id) ? .accentColor : .secondary)
                                         FavoriteRow(favorite: fav)
-                                            .tag(fav.id)
                                     }
-                                }
-                            }
-                            if !favoritesStore.ungrouped.isEmpty {
-                                Section(favoritesStore.groups.isEmpty ? "Favorites" : "Ungrouped") {
-                                    ForEach(favoritesStore.ungrouped) { fav in
-                                        FavoriteRow(favorite: fav)
-                                            .tag(fav.id)
+                                    .contentShape(Rectangle())
+                                    .onTapGesture {
+                                        if selectedFavoriteIDs.contains(fav.id) {
+                                            selectedFavoriteIDs.remove(fav.id)
+                                        } else {
+                                            selectedFavoriteIDs.insert(fav.id)
+                                        }
                                     }
                                 }
                             }
                         }
-                        .listStyle(.inset)
+
+                        // Imported IPs
+                        if !importedHosts.isEmpty {
+                            Section("Imported IPs (\(importedHosts.count))") {
+                                ForEach(importedHosts) { host in
+                                    HStack {
+                                        Image(systemName: selectedImportedIDs.contains(host.id) ? "checkmark.circle.fill" : "circle")
+                                            .foregroundColor(selectedImportedIDs.contains(host.id) ? .accentColor : .secondary)
+                                        Image(systemName: "network")
+                                            .foregroundStyle(.secondary)
+                                        Text(host.address)
+                                            .font(.system(.body, design: .monospaced))
+                                    }
+                                    .contentShape(Rectangle())
+                                    .onTapGesture {
+                                        if selectedImportedIDs.contains(host.id) {
+                                            selectedImportedIDs.remove(host.id)
+                                        } else {
+                                            selectedImportedIDs.insert(host.id)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    .listStyle(.inset)
+
+                    // Import IP settings
+                    if !importedHosts.isEmpty {
+                        HStack(spacing: 8) {
+                            Text("User:")
+                                .font(.caption)
+                            TextField("admin", text: $importUsername)
+                                .textFieldStyle(.roundedBorder)
+                                .frame(width: 80)
+                            Text("Path:")
+                                .font(.caption)
+                            TextField("/", text: $importRemotePath)
+                                .textFieldStyle(.roundedBorder)
+                                .frame(width: 80)
+                        }
                     }
 
                     HStack {
                         Button("Select All") {
                             selectedFavoriteIDs = Set(favoritesStore.favorites.map(\.id))
+                            selectedImportedIDs = Set(importedHosts.map(\.id))
                         }
                         Button("Clear") {
                             selectedFavoriteIDs.removeAll()
+                            selectedImportedIDs.removeAll()
+                        }
+                        Spacer()
+                        Button("Import IPs…") {
+                            showingIPImporter = true
                         }
                     }
                 }
                 .padding()
-                .frame(minWidth: 250)
+                .frame(minWidth: 280)
             }
 
             Divider()
 
             HStack {
-                Text("\(localPaths.count) file(s) → \(selectedFavoriteIDs.count) device(s)")
+                Text("\(localPaths.count) file(s) → \(totalDestinations) device(s)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 Spacer()
@@ -125,11 +182,11 @@ struct MultiDestinationView: View {
                 Button("Upload All") { startMultiUpload() }
                     .keyboardShortcut(.defaultAction)
                     .buttonStyle(.borderedProminent)
-                    .disabled(localPaths.isEmpty || selectedFavoriteIDs.isEmpty)
+                    .disabled(localPaths.isEmpty || totalDestinations == 0)
             }
             .padding()
         }
-        .frame(width: 600, height: 450)
+        .frame(width: 680, height: 500)
         .fileImporter(
             isPresented: $showingFilePicker,
             allowedContentTypes: [.item],
@@ -142,11 +199,58 @@ struct MultiDestinationView: View {
                 }
             }
         }
+        .fileImporter(
+            isPresented: $showingIPImporter,
+            allowedContentTypes: [.text, .plainText, .commaSeparatedText],
+            allowsMultipleSelection: false
+        ) { result in
+            if case .success(let urls) = result, let url = urls.first {
+                importIPList(from: url)
+            }
+        }
+    }
+
+    private func importIPList(from url: URL) {
+        guard let content = try? String(contentsOf: url, encoding: .utf8) else { return }
+
+        let existingAddresses = Set(importedHosts.map(\.address))
+        let lines = content.components(separatedBy: .newlines)
+
+        for line in lines {
+            // Support: bare IPs, "ip,name" CSV, "ip;name", "ip\tname", comments with #
+            let trimmed = line.trimmingCharacters(in: .whitespaces)
+            guard !trimmed.isEmpty, !trimmed.hasPrefix("#") else { continue }
+
+            // Take first field (split by comma, semicolon, tab, or space)
+            let address = trimmed
+                .components(separatedBy: CharacterSet(charactersIn: ",;\t "))
+                .first?
+                .trimmingCharacters(in: .whitespaces) ?? ""
+
+            guard !address.isEmpty, !existingAddresses.contains(address) else { continue }
+
+            let host = AdHocHost(address: address)
+            importedHosts.append(host)
+            selectedImportedIDs.insert(host.id)
+        }
     }
 
     private func startMultiUpload() {
-        let selectedFavorites = favoritesStore.favorites.filter { selectedFavoriteIDs.contains($0.id) }
-        transferManager.uploadToMultipleDestinations(localPaths: localPaths, favorites: selectedFavorites)
+        // Gather saved favorites
+        var allFavorites = favoritesStore.favorites.filter { selectedFavoriteIDs.contains($0.id) }
+
+        // Create ad-hoc favorites for imported IPs
+        for host in importedHosts where selectedImportedIDs.contains(host.id) {
+            allFavorites.append(Favorite(
+                name: host.address,
+                host: host.address,
+                username: importUsername,
+                authMethod: .agent,
+                remotePath: importRemotePath
+            ))
+        }
+
+        transferManager.uploadToMultipleDestinations(localPaths: localPaths, favorites: allFavorites)
         dismiss()
     }
 }
