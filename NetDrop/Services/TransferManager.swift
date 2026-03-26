@@ -132,11 +132,11 @@ class TransferManager {
                     )
                 } else {
                     task.status = .failed
-                    task.errorMessage = result.output
+                    task.errorMessage = ConnectionTester.friendlyError(from: result.output)
                     task.progressText = "Failed"
                     sendNotification(
                         title: "Transfer Failed",
-                        body: "\(fileName) → \(task.favorite.name)"
+                        body: "\(fileName) → \(task.favorite.name): \(task.errorMessage ?? "Unknown error")"
                     )
                 }
                 recordCompletion(task: task)

@@ -15,6 +15,7 @@
 		30C21A41AF4688CC21CDECAE /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 118659F6EB13DB3265B9FF81 /* WelcomeView.swift */; };
 		381CC18629BF5D785C5E7FD8 /* TransferTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266D87AFB2ECFBA0849D4604 /* TransferTask.swift */; };
 		3ABD2945595E6D1559E32596 /* RemoteFileBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5029A48B9955B60FFF17E11 /* RemoteFileBrowserView.swift */; };
+		4042548C9FE37FB1D5A07697 /* ConnectionTester.swift in Sources */ = {isa = PBXBuildFile; fileRef = 442A105ECABC8B5E2AD8ECC5 /* ConnectionTester.swift */; };
 		47BF519CA966872385F8A160 /* TransferRecordTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB7D62364C018F6E9E8563FD /* TransferRecordTests.swift */; };
 		48D56C12870C31232C66BB22 /* FavoriteModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A57C214B6E360CDCDDFF208 /* FavoriteModelTests.swift */; };
 		59D58B81A9EFFC4BAB9EF875 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A64EAF9ADBB031252CB3FD0 /* SettingsView.swift */; };
@@ -63,6 +64,7 @@
 		266D87AFB2ECFBA0849D4604 /* TransferTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferTask.swift; sourceTree = "<group>"; };
 		2A57C214B6E360CDCDDFF208 /* FavoriteModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteModelTests.swift; sourceTree = "<group>"; };
 		4041F281094F67EA8B88E617 /* SCPServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCPServiceTests.swift; sourceTree = "<group>"; };
+		442A105ECABC8B5E2AD8ECC5 /* ConnectionTester.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionTester.swift; sourceTree = "<group>"; };
 		46AD79BCF631E766037DB1DC /* AppSettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettingsTests.swift; sourceTree = "<group>"; };
 		4A64EAF9ADBB031252CB3FD0 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		4C2D01BD345A2C7DC2B32477 /* NetDropTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NetDropTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -185,6 +187,7 @@
 		EF3D8745415518C9FDD35A8B /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				442A105ECABC8B5E2AD8ECC5 /* ConnectionTester.swift */,
 				89D52B2EE7101D645C36AAEF /* FavoritesStore.swift */,
 				E1407FA2F044F51321BC716D /* IPListParser.swift */,
 				207A61F679950A9BB1585140 /* SCPService.swift */,
@@ -310,6 +313,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2E44C7F3436031E33B9C45BB /* AppSettings.swift in Sources */,
+				4042548C9FE37FB1D5A07697 /* ConnectionTester.swift in Sources */,
 				A202BD27A391B921B4E2DB6E /* ContentView.swift in Sources */,
 				D90CBA909E20AB297319CA66 /* Favorite.swift in Sources */,
 				0BE28FCD3A0D10C22FF80D9D /* FavoriteEditView.swift in Sources */,

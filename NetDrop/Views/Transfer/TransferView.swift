@@ -11,22 +11,56 @@ struct TransferView: View {
     @State private var showingFilePicker = false
     @State private var isDragOver = false
     @State private var showBrowser = false
+    @State private var connectionStatus: ConnectionStatus = .testing
 
     var body: some View {
         VStack(spacing: 0) {
             // Connection header
-            HStack {
-                Image(systemName: "network")
-                    .font(.title2)
-                    .foregroundColor(.accentColor)
+            HStack(spacing: 10) {
+                // Status indicator
+                Group {
+                    switch connectionStatus {
+                    case .testing:
+                        ProgressView()
+                            .controlSize(.small)
+                    case .connected:
+                        Image(systemName: "circle.fill")
+                            .foregroundColor(.green)
+                            .font(.caption)
+                    case .failed:
+                        Image(systemName: "circle.fill")
+                            .foregroundColor(.red)
+                            .font(.caption)
+                    }
+                }
+                .frame(width: 16)
+
                 VStack(alignment: .leading) {
-                    Text(favorite.name)
-                        .font(.headline)
+                    HStack(spacing: 6) {
+                        Text(favorite.name)
+                            .font(.headline)
+                        statusBadge
+                    }
                     Text("\(favorite.username)@\(favorite.host):\(favorite.port)")
                         .font(.caption)
                         .foregroundStyle(.secondary)
+                    if case .failed(let message) = connectionStatus {
+                        Text(message)
+                            .font(.caption2)
+                            .foregroundStyle(.red)
+                            .lineLimit(1)
+                    }
                 }
+
                 Spacer()
+
+                if case .failed = connectionStatus {
+                    Button("Retry") {
+                        testConnection()
+                    }
+                    .controlSize(.small)
+                }
+
                 Picker("", selection: $showBrowser) {
                     Label("Transfer", systemImage: "arrow.up.arrow.down").tag(false)
                     Label("Browse", systemImage: "folder").tag(true)
@@ -72,12 +106,55 @@ struct TransferView: View {
         }
         .onAppear {
             remotePath = favorite.remotePath
+            testConnection()
+        }
+        .onChange(of: favorite) { _, _ in
+            testConnection()
+        }
+    }
+
+    @ViewBuilder
+    private var statusBadge: some View {
+        switch connectionStatus {
+        case .testing:
+            Text("Connecting…")
+                .font(.caption2)
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(.yellow.opacity(0.2))
+                .foregroundStyle(.yellow)
+                .clipShape(Capsule())
+        case .connected:
+            Text("Connected")
+                .font(.caption2)
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(.green.opacity(0.2))
+                .foregroundStyle(.green)
+                .clipShape(Capsule())
+        case .failed:
+            Text("Offline")
+                .font(.caption2)
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(.red.opacity(0.2))
+                .foregroundStyle(.red)
+                .clipShape(Capsule())
+        }
+    }
+
+    private func testConnection() {
+        connectionStatus = .testing
+        Task {
+            let result = await ConnectionTester.test(favorite: favorite)
+            await MainActor.run {
+                connectionStatus = result
+            }
         }
     }
 
     private var transferFormView: some View {
         VStack(spacing: 0) {
-            // Drop zone + file list
             VStack(spacing: 8) {
                 if localFilePaths.isEmpty {
                     dropZone
@@ -87,7 +164,6 @@ struct TransferView: View {
             }
             .padding()
 
-            // Remote path + actions
             Form {
                 Section {
                     TextField("Remote path", text: $remotePath, prompt: Text(favorite.remotePath))
