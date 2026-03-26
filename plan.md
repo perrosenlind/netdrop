@@ -136,16 +136,16 @@ A lightweight macOS GUI for SCP transfers, aimed at network engineers who work w
 - [x] Multi-file upload with queue
 - [x] Drag-and-drop upload
 - [x] Transfer progress parsing
-- [ ] SSH key selection per favorite
-- [ ] Favorite groups/tags
+- [x] SSH key selection per favorite
+- [x] Favorite groups/tags
 
 ### Phase 3 — Polish
-- [ ] Transfer history with search/filter
-- [ ] Keyboard shortcuts (Cmd+N new connection, Cmd+U upload, etc.)
-- [ ] Menu bar quick-upload (drop file on menubar icon → pick favorite → transfer)
+- [x] Transfer history with search/filter
+- [x] Keyboard shortcuts (Cmd+N new connection, Cmd+U upload, etc.)
+- [x] Menu bar quick-upload (drop file on menubar icon → pick favorite → transfer)
 - [ ] Auto-reconnect on timeout
 - [ ] Dark/light theme matching macOS system setting
-- [ ] Notifications on transfer complete
+- [x] Notifications on transfer complete
 
 ### Phase 4 — Nice to have
 - [ ] Bulk config backup scheduler (cron-like, SSH in and pull configs)

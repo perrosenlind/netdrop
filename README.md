@@ -13,8 +13,12 @@ A lightweight native macOS app for SCP file transfers, built for network enginee
 - **Remote File Browser** — Browse remote directories via SSH. Navigate folders, download files, delete with context menu.
 - **Drag & Drop** — Drop files onto the transfer area to start uploading immediately.
 - **Transfer Progress** — Live SCP progress output streamed to the transfer queue as files move.
-- **Transfer Log** — History of all transfers with status and timestamps.
-- **SSH Key Support** — Per-connection key assignment, SSH agent integration, or password auth.
+- **Transfer Log** — History of all transfers with search and status filtering.
+- **SSH Key Picker** — Browse for key files, per-connection assignment, SSH agent integration.
+- **Favorite Groups** — Organize connections into groups with quick-assign buttons.
+- **Menubar Quick-Upload** — Drop files onto the menubar icon to upload without opening the main window.
+- **Keyboard Shortcuts** — Cmd+N (new connection), Cmd+K (quick connect), Cmd+U (upload), Cmd+Shift+M (multi-device).
+- **Notifications** — macOS notifications on transfer complete or failure.
 
 ## Screenshots
 
@@ -59,7 +63,7 @@ See [plan.md](plan.md) for the full phased roadmap.
 
 - [x] Phase 1 — MVP: Favorites, single-file transfer, transfer log, quick connect
 - [x] Phase 2 — Remote file browser, multi-file queue, drag-and-drop, multi-destination, progress parsing
-- [ ] Phase 3 — History search, keyboard shortcuts, menubar quick-upload, theming
+- [x] Phase 3 — History search, keyboard shortcuts, menubar quick-upload, notifications
 - [ ] Phase 4 — Config backup scheduler, diff viewer, FortiManager integration
 
 ## License

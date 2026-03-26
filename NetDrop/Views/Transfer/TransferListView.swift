@@ -3,6 +3,26 @@ import SwiftUI
 struct TransferListView: View {
     @Environment(TransferManager.self) private var transferManager
 
+    @State private var searchText = ""
+    @State private var statusFilter: TransferStatus? = nil
+
+    private var filteredHistory: [TransferRecord] {
+        var records = transferManager.history
+        if let filter = statusFilter {
+            records = records.filter { $0.status == filter }
+        }
+        if !searchText.isEmpty {
+            let query = searchText.lowercased()
+            records = records.filter {
+                $0.favoriteName.lowercased().contains(query) ||
+                $0.host.lowercased().contains(query) ||
+                $0.localPath.lowercased().contains(query) ||
+                $0.remotePath.lowercased().contains(query)
+            }
+        }
+        return records
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
@@ -19,6 +39,27 @@ struct TransferListView: View {
             }
             .padding(.horizontal)
             .padding(.vertical, 8)
+
+            // Search & filter bar
+            if !transferManager.history.isEmpty {
+                HStack(spacing: 8) {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundStyle(.secondary)
+                    TextField("Search transfers…", text: $searchText)
+                        .textFieldStyle(.roundedBorder)
+                        .controlSize(.small)
+
+                    Picker("", selection: $statusFilter) {
+                        Text("All").tag(TransferStatus?.none)
+                        Text("Completed").tag(TransferStatus?.some(.completed))
+                        Text("Failed").tag(TransferStatus?.some(.failed))
+                    }
+                    .pickerStyle(.segmented)
+                    .frame(width: 200)
+                }
+                .padding(.horizontal)
+                .padding(.bottom, 6)
+            }
 
             Divider()
 
@@ -39,9 +80,9 @@ struct TransferListView: View {
                         }
                     }
 
-                    if !transferManager.history.isEmpty {
-                        Section("Recent") {
-                            ForEach(transferManager.history.prefix(20)) { record in
+                    if !filteredHistory.isEmpty {
+                        Section("History (\(filteredHistory.count))") {
+                            ForEach(filteredHistory) { record in
                                 TransferRecordRow(record: record)
                             }
                         }

@@ -47,7 +47,6 @@ struct ContentView: View {
                 } label: {
                     Label("Quick Connect", systemImage: "bolt.horizontal.fill")
                 }
-                .keyboardShortcut("k", modifiers: .command)
             }
             ToolbarItem(placement: .primaryAction) {
                 Button {
@@ -55,8 +54,16 @@ struct ContentView: View {
                 } label: {
                     Label("Multi-Device Upload", systemImage: "arrow.up.to.line.compact")
                 }
-                .keyboardShortcut("m", modifiers: [.command, .shift])
             }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .showAddFavorite)) { _ in
+            showingAddFavorite = true
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .showQuickConnect)) { _ in
+            showingQuickConnect = true
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .showMultiDestination)) { _ in
+            showingMultiDestination = true
         }
         .frame(minWidth: 700, minHeight: 450)
     }

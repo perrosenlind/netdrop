@@ -24,6 +24,7 @@ struct FavoriteEditView: View {
     @State private var username: String = "admin"
     @State private var authType: AuthType = .key
     @State private var keyPath: String = "~/.ssh/id_rsa"
+    @State private var showKeyPicker = false
     @State private var remotePath: String = "/"
     @State private var group: String = ""
 
@@ -64,13 +65,27 @@ struct FavoriteEditView: View {
                     }
 
                     if authType == .key {
-                        TextField("Key Path", text: $keyPath)
+                        HStack {
+                            TextField("Key Path", text: $keyPath)
+                            Button("Browse…") {
+                                showKeyPicker = true
+                            }
+                        }
                     }
                 }
 
                 Section("Options") {
                     TextField("Remote Path", text: $remotePath)
                     TextField("Group", text: $group, prompt: Text("Optional"))
+                    if !favoritesStore.groups.isEmpty {
+                        HStack(spacing: 6) {
+                            ForEach(favoritesStore.groups, id: \.self) { g in
+                                Button(g) { group = g }
+                                    .buttonStyle(.bordered)
+                                    .controlSize(.small)
+                            }
+                        }
+                    }
                 }
             }
             .formStyle(.grouped)
@@ -87,6 +102,15 @@ struct FavoriteEditView: View {
                     .disabled(!isValid)
             }
             .padding()
+        }
+        .fileImporter(
+            isPresented: $showKeyPicker,
+            allowedContentTypes: [.item],
+            allowsMultipleSelection: false
+        ) { result in
+            if case .success(let urls) = result, let url = urls.first {
+                keyPath = url.path
+            }
         }
         .onAppear {
             if case .edit(let favorite) = mode {

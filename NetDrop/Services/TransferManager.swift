@@ -1,4 +1,5 @@
 import Foundation
+import UserNotifications
 
 @Observable
 class TransferManager {
@@ -13,6 +14,20 @@ class TransferManager {
         try? FileManager.default.createDirectory(at: appDir, withIntermediateDirectories: true)
         self.historyURL = appDir.appendingPathComponent("history.json")
         loadHistory()
+        requestNotificationPermission()
+    }
+
+    private func requestNotificationPermission() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
+    }
+
+    private func sendNotification(title: String, body: String) {
+        let content = UNMutableNotificationContent()
+        content.title = title
+        content.body = body
+        content.sound = .default
+        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
+        UNUserNotificationCenter.current().add(request)
     }
 
     // MARK: - Single transfers
@@ -107,13 +122,22 @@ class TransferManager {
             }
 
             await MainActor.run {
+                let fileName = (task.localPath as NSString).lastPathComponent
                 if result.exitCode == 0 {
                     task.status = .completed
                     task.progressText = "Complete"
+                    sendNotification(
+                        title: "Transfer Complete",
+                        body: "\(fileName) → \(task.favorite.name)"
+                    )
                 } else {
                     task.status = .failed
                     task.errorMessage = result.output
                     task.progressText = "Failed"
+                    sendNotification(
+                        title: "Transfer Failed",
+                        body: "\(fileName) → \(task.favorite.name)"
+                    )
                 }
                 recordCompletion(task: task)
             }
