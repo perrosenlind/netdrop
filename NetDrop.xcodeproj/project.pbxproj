@@ -16,6 +16,7 @@
 		381CC18629BF5D785C5E7FD8 /* TransferTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266D87AFB2ECFBA0849D4604 /* TransferTask.swift */; };
 		3ABD2945595E6D1559E32596 /* RemoteFileBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5029A48B9955B60FFF17E11 /* RemoteFileBrowserView.swift */; };
 		4042548C9FE37FB1D5A07697 /* ConnectionTester.swift in Sources */ = {isa = PBXBuildFile; fileRef = 442A105ECABC8B5E2AD8ECC5 /* ConnectionTester.swift */; };
+		44FA41419124624610198620 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD3954DAAD4ECBD4DDFB46E5 /* KeychainService.swift */; };
 		47BF519CA966872385F8A160 /* TransferRecordTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB7D62364C018F6E9E8563FD /* TransferRecordTests.swift */; };
 		48D56C12870C31232C66BB22 /* FavoriteModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A57C214B6E360CDCDDFF208 /* FavoriteModelTests.swift */; };
 		59D58B81A9EFFC4BAB9EF875 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A64EAF9ADBB031252CB3FD0 /* SettingsView.swift */; };
@@ -79,6 +80,7 @@
 		8C17DDEACCF28635174B3131 /* SSHServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHServiceTests.swift; sourceTree = "<group>"; };
 		9367F3CB4873FE8C36F7474D /* IPListParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPListParserTests.swift; sourceTree = "<group>"; };
 		B8289BF2EEB758EBF0BB28FB /* QuickConnectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickConnectView.swift; sourceTree = "<group>"; };
+		BD3954DAAD4ECBD4DDFB46E5 /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
 		C2FF0D6C80AF1FE44480D305 /* RemoteFileEntryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteFileEntryTests.swift; sourceTree = "<group>"; };
 		C5029A48B9955B60FFF17E11 /* RemoteFileBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteFileBrowserView.swift; sourceTree = "<group>"; };
 		C742E5B581582B799768DF95 /* TransferRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferRecord.swift; sourceTree = "<group>"; };
@@ -190,6 +192,7 @@
 				442A105ECABC8B5E2AD8ECC5 /* ConnectionTester.swift */,
 				89D52B2EE7101D645C36AAEF /* FavoritesStore.swift */,
 				E1407FA2F044F51321BC716D /* IPListParser.swift */,
+				BD3954DAAD4ECBD4DDFB46E5 /* KeychainService.swift */,
 				207A61F679950A9BB1585140 /* SCPService.swift */,
 				C954BF0D876AC40505BA23F0 /* SSHService.swift */,
 				23373917EBED54D87B1D5928 /* TransferManager.swift */,
@@ -319,6 +322,7 @@
 				0BE28FCD3A0D10C22FF80D9D /* FavoriteEditView.swift in Sources */,
 				B5B0CCC21651AC6686E4146E /* FavoritesStore.swift in Sources */,
 				F04EC846FCF74386D49BD35D /* IPListParser.swift in Sources */,
+				44FA41419124624610198620 /* KeychainService.swift in Sources */,
 				B4D774D5F65BF93E7AFDCABA /* MenuBarView.swift in Sources */,
 				7DDD9E08D35E52E64D38D2D5 /* MultiDestinationView.swift in Sources */,
 				EE131D6256F38BE575D0B82E /* NetDropApp.swift in Sources */,

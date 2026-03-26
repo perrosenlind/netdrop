@@ -29,6 +29,11 @@ struct Favorite: Identifiable, Codable, Hashable {
         self.remotePath = remotePath
         self.group = group
     }
+
+    /// Get stored password from Keychain (only for .password auth)
+    var password: String? {
+        KeychainService.getPassword(for: id)
+    }
 }
 
 enum AuthMethod: Codable, Hashable {

@@ -24,6 +24,7 @@ struct FavoriteEditView: View {
     @State private var username: String = "admin"
     @State private var authType: AuthType = .key
     @State private var keyPath: String = "~/.ssh/id_rsa"
+    @State private var passwordField: String = ""
     @State private var showKeyPicker = false
     @State private var remotePath: String = "/"
     @State private var group: String = ""
@@ -71,6 +72,13 @@ struct FavoriteEditView: View {
                                 showKeyPicker = true
                             }
                         }
+                    }
+
+                    if authType == .password {
+                        SecureField("Password", text: $passwordField)
+                        Text("Stored securely in macOS Keychain")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
                     }
                 }
 
@@ -130,6 +138,7 @@ struct FavoriteEditView: View {
         switch favorite.authMethod {
         case .password:
             authType = .password
+            passwordField = KeychainService.getPassword(for: favorite.id) ?? ""
         case .key(let path):
             authType = .key
             keyPath = path
@@ -164,6 +173,13 @@ struct FavoriteEditView: View {
             favoritesStore.update(favorite)
         } else {
             favoritesStore.add(favorite)
+        }
+
+        // Save password to Keychain
+        if authType == .password {
+            KeychainService.savePassword(passwordField, for: favorite.id)
+        } else {
+            KeychainService.deletePassword(for: favorite.id)
         }
 
         dismiss()

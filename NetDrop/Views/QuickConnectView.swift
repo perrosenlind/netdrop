@@ -7,15 +7,16 @@ struct QuickConnectView: View {
     @State private var host: String = ""
     @State private var port: String = "22"
     @State private var username: String = "admin"
+    @State private var passwordField: String = ""
     @State private var remotePath: String = "/"
-    @State private var authType: AuthType = .agent
+    @State private var authType: AuthType = .password
     @State private var keyPath: String = "~/.ssh/id_rsa"
     @State private var saveAsFavorite: Bool = false
     @State private var favoriteName: String = ""
 
     private enum AuthType: String, CaseIterable {
-        case key = "SSH Key"
         case password = "Password"
+        case key = "SSH Key"
         case agent = "SSH Agent"
     }
 
@@ -25,7 +26,6 @@ struct QuickConnectView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // Header
             HStack {
                 Image(systemName: "bolt.horizontal.fill")
                     .font(.title2)
@@ -59,6 +59,10 @@ struct QuickConnectView: View {
                         }
                     }
                     .pickerStyle(.segmented)
+
+                    if authType == .password {
+                        SecureField("Password", text: $passwordField)
+                    }
 
                     if authType == .key {
                         TextField("Key Path", text: $keyPath)
@@ -111,6 +115,11 @@ struct QuickConnectView: View {
 
         if saveAsFavorite {
             favoritesStore.add(favorite)
+        }
+
+        // Store password in Keychain
+        if authType == .password && !passwordField.isEmpty {
+            KeychainService.savePassword(passwordField, for: favorite.id)
         }
 
         favoritesStore.selectedFavorite = favorite

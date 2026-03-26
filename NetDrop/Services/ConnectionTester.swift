@@ -7,10 +7,12 @@ enum ConnectionStatus: Equatable {
 }
 
 struct ConnectionTester {
+    private static let sshpassPath = "/opt/homebrew/bin/sshpass"
+
     /// Quick SSH connection test — runs `echo ok` on the remote host.
-    static func test(favorite: Favorite) async -> ConnectionStatus {
+    static func test(favorite: Favorite, password: String? = nil) async -> ConnectionStatus {
         do {
-            let result = try await runSSH(command: "echo ok", favorite: favorite)
+            let result = try await runSSH(command: "echo ok", favorite: favorite, password: password)
             if result.exitCode == 0 && result.output.contains("ok") {
                 return .connected
             } else {
@@ -23,38 +25,44 @@ struct ConnectionTester {
 
     private static func runSSH(
         command: String,
-        favorite: Favorite
+        favorite: Favorite,
+        password: String? = nil
     ) async throws -> (output: String, exitCode: Int32) {
         try await withCheckedThrowingContinuation { continuation in
             let process = Process()
-            process.executableURL = URL(fileURLWithPath: "/usr/bin/ssh")
 
-            var args: [String] = []
+            var sshArgs: [String] = []
 
             if favorite.port != 22 {
-                args.append(contentsOf: ["-p", "\(favorite.port)"])
+                sshArgs.append(contentsOf: ["-p", "\(favorite.port)"])
             }
 
             if case .key(let path) = favorite.authMethod {
                 let expandedPath = (path as NSString).expandingTildeInPath
-                args.append(contentsOf: ["-i", expandedPath])
+                sshArgs.append(contentsOf: ["-i", expandedPath])
             }
 
-            args.append(contentsOf: ["-o", "StrictHostKeyChecking=no"])
-            args.append(contentsOf: ["-o", "ConnectTimeout=5"])
+            sshArgs.append(contentsOf: ["-o", "StrictHostKeyChecking=no"])
+            sshArgs.append(contentsOf: ["-o", "ConnectTimeout=5"])
 
-            // Only use BatchMode for non-password auth (BatchMode disables password prompts)
             if case .password = favorite.authMethod {
-                // Don't set BatchMode — password auth needs interactive prompt
-                // For the connection test we'll rely on timeout instead
+                // no BatchMode for password
             } else {
-                args.append(contentsOf: ["-o", "BatchMode=yes"])
+                sshArgs.append(contentsOf: ["-o", "BatchMode=yes"])
             }
 
-            args.append("\(favorite.username)@\(favorite.host)")
-            args.append(command)
+            sshArgs.append("\(favorite.username)@\(favorite.host)")
+            sshArgs.append(command)
 
-            process.arguments = args
+            // Use sshpass for password auth
+            let pw = password ?? favorite.password
+            if case .password = favorite.authMethod, let pw, !pw.isEmpty {
+                process.executableURL = URL(fileURLWithPath: sshpassPath)
+                process.arguments = ["-p", pw, "/usr/bin/ssh"] + sshArgs
+            } else {
+                process.executableURL = URL(fileURLWithPath: "/usr/bin/ssh")
+                process.arguments = sshArgs
+            }
 
             let pipe = Pipe()
             let errorPipe = Pipe()

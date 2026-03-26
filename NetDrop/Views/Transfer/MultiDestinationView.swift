@@ -178,6 +178,12 @@ struct MultiDestinationView: View {
                                 .labelsHidden()
                                 .frame(width: 100)
 
+                                if importAuthMethod == .password {
+                                    SecureField("Password", text: $importPassword)
+                                        .textFieldStyle(.roundedBorder)
+                                        .frame(width: 120)
+                                }
+
                                 if importAuthMethod == .key {
                                     TextField("~/.ssh/id_rsa", text: $importKeyPath)
                                         .textFieldStyle(.roundedBorder)
@@ -271,13 +277,18 @@ struct MultiDestinationView: View {
         }
 
         for host in importedHosts where selectedImportedIDs.contains(host.id) {
-            allFavorites.append(Favorite(
+            let fav = Favorite(
                 name: host.address,
                 host: host.address,
                 username: importUsername,
                 authMethod: authMethod,
                 remotePath: importRemotePath
-            ))
+            )
+            // Store password in Keychain for this ad-hoc favorite
+            if importAuthMethod == .password && !importPassword.isEmpty {
+                KeychainService.savePassword(importPassword, for: fav.id)
+            }
+            allFavorites.append(fav)
         }
 
         transferManager.uploadToMultipleDestinations(localPaths: localPaths, favorites: allFavorites)

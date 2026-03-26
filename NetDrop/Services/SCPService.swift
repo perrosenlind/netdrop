@@ -1,32 +1,38 @@
 import Foundation
 
 struct SCPService {
-    /// Upload a local file to a remote host via scp with progress callback
+    private static let sshpassPath = "/opt/homebrew/bin/sshpass"
+
     static func upload(
         localPath: String,
         remotePath: String,
         favorite: Favorite,
+        password: String? = nil,
         onProgress: (@Sendable (String) -> Void)? = nil
     ) async throws -> (output: String, exitCode: Int32) {
         let remoteTarget = "\(favorite.username)@\(favorite.host):\(remotePath)"
         var args = buildBaseArgs(favorite: favorite)
         args.append(localPath)
         args.append(remoteTarget)
-        return try await runSCP(args: args, onProgress: onProgress)
+
+        let pw = password ?? favorite.password
+        return try await runSCP(args: args, password: pw, favorite: favorite, onProgress: onProgress)
     }
 
-    /// Download a remote file to a local path via scp with progress callback
     static func download(
         remotePath: String,
         localPath: String,
         favorite: Favorite,
+        password: String? = nil,
         onProgress: (@Sendable (String) -> Void)? = nil
     ) async throws -> (output: String, exitCode: Int32) {
         let remoteTarget = "\(favorite.username)@\(favorite.host):\(remotePath)"
         var args = buildBaseArgs(favorite: favorite)
         args.append(remoteTarget)
         args.append(localPath)
-        return try await runSCP(args: args, onProgress: onProgress)
+
+        let pw = password ?? favorite.password
+        return try await runSCP(args: args, password: pw, favorite: favorite, onProgress: onProgress)
     }
 
     private static func buildBaseArgs(favorite: Favorite) -> [String] {
@@ -48,24 +54,31 @@ struct SCPService {
 
     private static func runSCP(
         args: [String],
+        password: String?,
+        favorite: Favorite,
         onProgress: (@Sendable (String) -> Void)? = nil
     ) async throws -> (output: String, exitCode: Int32) {
         try await withCheckedThrowingContinuation { continuation in
             let process = Process()
-            process.executableURL = URL(fileURLWithPath: "/usr/bin/scp")
-            process.arguments = args
+
+            // Use sshpass for password auth
+            if case .password = favorite.authMethod, let pw = password, !pw.isEmpty {
+                process.executableURL = URL(fileURLWithPath: sshpassPath)
+                process.arguments = ["-p", pw, "/usr/bin/scp"] + args
+            } else {
+                process.executableURL = URL(fileURLWithPath: "/usr/bin/scp")
+                process.arguments = args
+            }
 
             let pipe = Pipe()
             let errorPipe = Pipe()
             process.standardOutput = pipe
             process.standardError = errorPipe
 
-            // Stream stderr for progress parsing
             if let onProgress {
                 errorPipe.fileHandleForReading.readabilityHandler = { handle in
                     let data = handle.availableData
                     guard !data.isEmpty, let line = String(data: data, encoding: .utf8) else { return }
-                    // SCP progress lines look like: filename  45%  1.2MB  00:03
                     let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
                     if trimmed.contains("%") {
                         onProgress(trimmed)

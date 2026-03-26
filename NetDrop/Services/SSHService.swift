@@ -50,32 +50,45 @@ struct SSHService {
         }
     }
 
+    private static let sshpassPath = "/opt/homebrew/bin/sshpass"
+
     private static func runSSH(
         command: String,
         favorite: Favorite
     ) async throws -> (output: String, exitCode: Int32) {
         try await withCheckedThrowingContinuation { continuation in
             let process = Process()
-            process.executableURL = URL(fileURLWithPath: "/usr/bin/ssh")
 
-            var args: [String] = []
+            var sshArgs: [String] = []
 
             if favorite.port != 22 {
-                args.append(contentsOf: ["-p", "\(favorite.port)"])
+                sshArgs.append(contentsOf: ["-p", "\(favorite.port)"])
             }
 
             if case .key(let path) = favorite.authMethod {
                 let expandedPath = (path as NSString).expandingTildeInPath
-                args.append(contentsOf: ["-i", expandedPath])
+                sshArgs.append(contentsOf: ["-i", expandedPath])
             }
 
-            args.append(contentsOf: ["-o", "StrictHostKeyChecking=no"])
-            args.append(contentsOf: ["-o", "BatchMode=yes"])
-            args.append(contentsOf: ["-o", "ConnectTimeout=10"])
-            args.append("\(favorite.username)@\(favorite.host)")
-            args.append(command)
+            sshArgs.append(contentsOf: ["-o", "StrictHostKeyChecking=no"])
+            sshArgs.append(contentsOf: ["-o", "ConnectTimeout=10"])
 
-            process.arguments = args
+            if case .password = favorite.authMethod {
+                // no BatchMode
+            } else {
+                sshArgs.append(contentsOf: ["-o", "BatchMode=yes"])
+            }
+
+            sshArgs.append("\(favorite.username)@\(favorite.host)")
+            sshArgs.append(command)
+
+            if case .password = favorite.authMethod, let pw = favorite.password, !pw.isEmpty {
+                process.executableURL = URL(fileURLWithPath: sshpassPath)
+                process.arguments = ["-p", pw, "/usr/bin/ssh"] + sshArgs
+            } else {
+                process.executableURL = URL(fileURLWithPath: "/usr/bin/ssh")
+                process.arguments = sshArgs
+            }
 
             let pipe = Pipe()
             let errorPipe = Pipe()
