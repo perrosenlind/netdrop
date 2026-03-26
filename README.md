@@ -12,7 +12,7 @@ A lightweight native macOS app for SCP file transfers, built for network enginee
 - **Multi-File Upload** — Select multiple files or drag-and-drop them onto the app to queue transfers.
 - **Multi-Destination Upload** — Push the same file(s) to multiple devices at once (Cmd+Shift+M). Import a list of IPs from a text/CSV file with shared credentials, or select from your favorites.
 - **Remote File Browser** — Browse remote directories via SSH. Navigate folders, download files, delete with context menu.
-- **Connection Status** — Live green/red indicator showing if a device is reachable, with friendly error messages (e.g. "Connection refused — SSH is not running on this host").
+- **Connection Status** — Live green/red indicator showing if a device is reachable, with friendly error messages. Auto-reconnects every 15 seconds when offline.
 - **Drag & Drop** — Drop files onto the transfer area to start uploading immediately.
 - **Transfer Progress** — Live SCP progress output streamed to the transfer queue as files move.
 - **Transfer Log** — History of all transfers with search and status filtering (All/Completed/Failed).

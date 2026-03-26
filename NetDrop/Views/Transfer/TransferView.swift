@@ -12,6 +12,7 @@ struct TransferView: View {
     @State private var isDragOver = false
     @State private var showBrowser = false
     @State private var connectionStatus: ConnectionStatus = .testing
+    @State private var reconnectTimer: Timer?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -107,6 +108,11 @@ struct TransferView: View {
         .onAppear {
             remotePath = favorite.remotePath
             testConnection()
+            startReconnectTimer()
+        }
+        .onDisappear {
+            reconnectTimer?.invalidate()
+            reconnectTimer = nil
         }
         .onChange(of: favorite) { _, _ in
             testConnection()
@@ -149,6 +155,16 @@ struct TransferView: View {
             let result = await ConnectionTester.test(favorite: favorite)
             await MainActor.run {
                 connectionStatus = result
+            }
+        }
+    }
+
+    private func startReconnectTimer() {
+        reconnectTimer?.invalidate()
+        reconnectTimer = Timer.scheduledTimer(withTimeInterval: 15, repeats: true) { _ in
+            // Only auto-retry when offline
+            if case .failed = connectionStatus {
+                testConnection()
             }
         }
     }
