@@ -41,19 +41,24 @@ struct ContentView: View {
             FavoriteEditView(mode: .edit(favorite))
         }
         .toolbar {
-            ToolbarItem(placement: .primaryAction) {
+            ToolbarItemGroup(placement: .primaryAction) {
                 Button {
                     showingQuickConnect = true
                 } label: {
-                    Label("Quick Connect", systemImage: "bolt.fill")
+                    HStack(spacing: 4) {
+                        Image(systemName: "bolt.fill")
+                        Text("Quick Connect")
+                    }
                 }
                 .help("Connect to a device without saving (Cmd+K)")
-            }
-            ToolbarItem(placement: .primaryAction) {
+
                 Button {
                     showingMultiDestination = true
                 } label: {
-                    Label("Multi-Upload", systemImage: "square.and.arrow.up.on.square")
+                    HStack(spacing: 4) {
+                        Image(systemName: "square.and.arrow.up.on.square")
+                        Text("Multi-Upload")
+                    }
                 }
                 .help("Upload files to multiple devices (Cmd+Shift+M)")
             }

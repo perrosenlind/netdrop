@@ -15,7 +15,16 @@ struct MultiDestinationView: View {
     @State private var importedHosts: [AdHocHost] = []
     @State private var selectedImportedIDs: Set<UUID> = []
     @State private var importUsername: String = "admin"
+    @State private var importPassword: String = ""
+    @State private var importAuthMethod: ImportAuthType = .agent
+    @State private var importKeyPath: String = "~/.ssh/id_rsa"
     @State private var importRemotePath: String = "/"
+
+    private enum ImportAuthType: String, CaseIterable {
+        case password = "Password"
+        case key = "SSH Key"
+        case agent = "SSH Agent"
+    }
 
     /// Temporary host parsed from an IP list (not saved as a favorite)
     struct AdHocHost: Identifiable, Hashable {
@@ -140,17 +149,41 @@ struct MultiDestinationView: View {
 
                     // Import IP settings
                     if !importedHosts.isEmpty {
-                        HStack(spacing: 8) {
-                            Text("User:")
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("Imported IP Settings")
                                 .font(.caption)
-                            TextField("admin", text: $importUsername)
-                                .textFieldStyle(.roundedBorder)
-                                .frame(width: 80)
-                            Text("Path:")
-                                .font(.caption)
-                            TextField("/", text: $importRemotePath)
-                                .textFieldStyle(.roundedBorder)
-                                .frame(width: 80)
+                                .foregroundStyle(.secondary)
+
+                            HStack(spacing: 8) {
+                                Text("User:")
+                                    .font(.caption)
+                                TextField("admin", text: $importUsername)
+                                    .textFieldStyle(.roundedBorder)
+                                    .frame(width: 80)
+                                Text("Path:")
+                                    .font(.caption)
+                                TextField("/", text: $importRemotePath)
+                                    .textFieldStyle(.roundedBorder)
+                                    .frame(width: 80)
+                            }
+
+                            HStack(spacing: 8) {
+                                Text("Auth:")
+                                    .font(.caption)
+                                Picker("", selection: $importAuthMethod) {
+                                    ForEach(ImportAuthType.allCases, id: \.self) { t in
+                                        Text(t.rawValue).tag(t)
+                                    }
+                                }
+                                .labelsHidden()
+                                .frame(width: 100)
+
+                                if importAuthMethod == .key {
+                                    TextField("~/.ssh/id_rsa", text: $importKeyPath)
+                                        .textFieldStyle(.roundedBorder)
+                                        .frame(width: 120)
+                                }
+                            }
                         }
                     }
 
@@ -231,12 +264,18 @@ struct MultiDestinationView: View {
         var allFavorites = favoritesStore.favorites.filter { selectedFavoriteIDs.contains($0.id) }
 
         // Create ad-hoc favorites for imported IPs
+        let authMethod: AuthMethod = switch importAuthMethod {
+        case .password: .password
+        case .key: .key(path: importKeyPath)
+        case .agent: .agent
+        }
+
         for host in importedHosts where selectedImportedIDs.contains(host.id) {
             allFavorites.append(Favorite(
                 name: host.address,
                 host: host.address,
                 username: importUsername,
-                authMethod: .agent,
+                authMethod: authMethod,
                 remotePath: importRemotePath
             ))
         }

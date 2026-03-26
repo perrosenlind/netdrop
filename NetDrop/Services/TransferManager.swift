@@ -132,7 +132,7 @@ class TransferManager {
                     )
                 } else {
                     task.status = .failed
-                    task.errorMessage = ConnectionTester.friendlyError(from: result.output)
+                    task.errorMessage = ConnectionTester.friendlyError(from: result.output, authMethod: task.favorite.authMethod)
                     task.progressText = "Failed"
                     sendNotification(
                         title: "Transfer Failed",

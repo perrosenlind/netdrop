@@ -14,7 +14,7 @@ struct ConnectionTester {
             if result.exitCode == 0 && result.output.contains("ok") {
                 return .connected
             } else {
-                return .failed(friendlyError(from: result.output))
+                return .failed(friendlyError(from: result.output, authMethod: favorite.authMethod))
             }
         } catch {
             return .failed(error.localizedDescription)
@@ -41,8 +41,16 @@ struct ConnectionTester {
             }
 
             args.append(contentsOf: ["-o", "StrictHostKeyChecking=no"])
-            args.append(contentsOf: ["-o", "BatchMode=yes"])
             args.append(contentsOf: ["-o", "ConnectTimeout=5"])
+
+            // Only use BatchMode for non-password auth (BatchMode disables password prompts)
+            if case .password = favorite.authMethod {
+                // Don't set BatchMode — password auth needs interactive prompt
+                // For the connection test we'll rely on timeout instead
+            } else {
+                args.append(contentsOf: ["-o", "BatchMode=yes"])
+            }
+
             args.append("\(favorite.username)@\(favorite.host)")
             args.append(command)
 
@@ -71,7 +79,7 @@ struct ConnectionTester {
         }
     }
 
-    static func friendlyError(from output: String) -> String {
+    static func friendlyError(from output: String, authMethod: AuthMethod = .agent) -> String {
         let lower = output.lowercased()
 
         if lower.contains("connection refused") {
@@ -84,10 +92,17 @@ struct ConnectionTester {
             return "No route to host — check the IP address"
         }
         if lower.contains("host key verification failed") {
-            return "Host key verification failed — remove old key with ssh-keygen -R"
+            return "Host key changed — run: ssh-keygen -R <host>"
         }
         if lower.contains("permission denied") {
-            return "Permission denied — check username and SSH key"
+            switch authMethod {
+            case .password:
+                return "Permission denied — check username and password"
+            case .key(let path):
+                return "Permission denied — check key at \(path)"
+            case .agent:
+                return "Permission denied — no key found in SSH agent"
+            }
         }
         if lower.contains("could not resolve hostname") {
             return "Could not resolve hostname — check the address"
@@ -96,10 +111,9 @@ struct ConnectionTester {
             return "Network is unreachable — check your connection"
         }
 
-        // Trim to first meaningful line
         let lines = output.components(separatedBy: .newlines)
             .map { $0.trimmingCharacters(in: .whitespaces) }
-            .filter { !$0.isEmpty }
-        return lines.first ?? "Unknown error"
+            .filter { !$0.isEmpty && !$0.hasPrefix("debug") }
+        return lines.last ?? "Connection failed"
     }
 }
