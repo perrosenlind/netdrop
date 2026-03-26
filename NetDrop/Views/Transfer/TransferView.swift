@@ -2,6 +2,7 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct TransferView: View {
+    @Environment(FavoritesStore.self) private var favoritesStore
     @Environment(TransferManager.self) private var transferManager
     let favorite: Favorite
 
@@ -32,6 +33,16 @@ struct TransferView: View {
                 }
                 .pickerStyle(.segmented)
                 .frame(width: 200)
+
+                Button {
+                    favoritesStore.selectedFavorite = nil
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundStyle(.secondary)
+                        .font(.title3)
+                }
+                .buttonStyle(.borderless)
+                .help("Close connection")
             }
             .padding()
 
