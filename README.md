@@ -23,6 +23,7 @@ A lightweight native macOS app for SCP file transfers, built for network enginee
 - **Notifications** — macOS notifications on transfer complete or failure with error details.
 - **Dark/Light Mode** — System, Light, or Dark theme via Settings (Cmd+,).
 - **Config Backup Scheduler** — Schedule automatic config pulls from devices on intervals (15min to daily). Run SSH commands, save output with timestamps. View results and status per job.
+- **Side-by-Side Diff** — Compare two config files with LCS-based diff. Color-coded added/removed/modified lines, line numbers, summary stats. Pick from backup history or browse local files.
 - **Welcome Screen** — Action cards and shortcut reference when no connection is selected.
 
 ## Requirements
@@ -58,7 +59,7 @@ xcodebuild -project NetDrop.xcodeproj -scheme NetDrop -configuration Debug build
 xcodebuild -project NetDrop.xcodeproj -scheme NetDropTests -configuration Debug test
 ```
 
-69 unit tests covering all models, services, and stores:
+78 unit tests covering all models, services, and stores:
 
 | Suite | Tests | Coverage |
 |---|---|---|
@@ -73,6 +74,7 @@ xcodebuild -project NetDrop.xcodeproj -scheme NetDropTests -configuration Debug 
 | TransferTaskTests | 4 | Init, cancel, process attachment, properties |
 | TransferRecordTests | 4 | Defaults, Codable, directions, statuses |
 | BackupJobTests | 4 | Defaults, Codable round-trip, result model, statuses |
+| DiffEngineTests | 9 | Identical, added, removed, modified, empty, summary, large configs |
 
 ## Architecture
 

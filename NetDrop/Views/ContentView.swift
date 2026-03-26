@@ -8,6 +8,7 @@ struct ContentView: View {
     @State private var showingQuickConnect = false
     @State private var showingMultiDestination = false
     @State private var showingBackupScheduler = false
+    @State private var showingDiffPicker = false
     @State private var editingFavorite: Favorite?
 
     var body: some View {
@@ -41,6 +42,9 @@ struct ContentView: View {
         .sheet(isPresented: $showingBackupScheduler) {
             BackupSchedulerView()
                 .frame(width: 600, height: 500)
+        }
+        .sheet(isPresented: $showingDiffPicker) {
+            DiffPickerView()
         }
         .sheet(item: $editingFavorite) { favorite in
             FavoriteEditView(mode: .edit(favorite))
@@ -76,6 +80,16 @@ struct ContentView: View {
                     }
                 }
                 .help("Schedule config backups from devices")
+
+                Button {
+                    showingDiffPicker = true
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "arrow.left.arrow.right")
+                        Text("Diff")
+                    }
+                }
+                .help("Compare two config files side by side")
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .showAddFavorite)) { _ in

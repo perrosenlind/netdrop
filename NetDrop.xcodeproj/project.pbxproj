@@ -37,11 +37,14 @@
 		B4D774D5F65BF93E7AFDCABA /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F49811148AB38C70829F13D /* MenuBarView.swift */; };
 		B5B0CCC21651AC6686E4146E /* FavoritesStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89D52B2EE7101D645C36AAEF /* FavoritesStore.swift */; };
 		B7C27A7A3F16B5B4E098D089 /* SSHServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C17DDEACCF28635174B3131 /* SSHServiceTests.swift */; };
+		B974D9DCD5E3D92C7BE2E619 /* DiffView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35F84C2AD1591DFEDBCC19C5 /* DiffView.swift */; };
 		C318DE0E63A5D6111E55AA60 /* BackupJobTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE82DD1B87CA4F4BF3EB1A6 /* BackupJobTests.swift */; };
 		CBFA877F7CBABD9E9C54AC91 /* RemoteFileEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AB82093A82D2C77DB6629B8 /* RemoteFileEntry.swift */; };
+		D3946AC20FAB777B43C67C52 /* DiffEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0086B8B27811D9C3B3A39ED /* DiffEngine.swift */; };
 		D90CBA909E20AB297319CA66 /* Favorite.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A8D9CA645DFDC980761DEA /* Favorite.swift */; };
 		E197679984A5E0950E83A57D /* TransferTaskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 080F17F93091EDD1CB3F76F6 /* TransferTaskTests.swift */; };
 		E1D77F5F9C4777EDD78919ED /* QuickConnectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8289BF2EEB758EBF0BB28FB /* QuickConnectView.swift */; };
+		EDB21DF1267B9FACDC521D87 /* DiffEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D52E9B35F8E1805FB750485 /* DiffEngineTests.swift */; };
 		EE131D6256F38BE575D0B82E /* NetDropApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F64BFCB489D0D91A73C4C689 /* NetDropApp.swift */; };
 		EE2F12DCFC2C70AA789E7DC1 /* SSHService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C954BF0D876AC40505BA23F0 /* SSHService.swift */; };
 		F04EC846FCF74386D49BD35D /* IPListParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1407FA2F044F51321BC716D /* IPListParser.swift */; };
@@ -69,6 +72,8 @@
 		23373917EBED54D87B1D5928 /* TransferManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferManager.swift; sourceTree = "<group>"; };
 		266D87AFB2ECFBA0849D4604 /* TransferTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferTask.swift; sourceTree = "<group>"; };
 		2A57C214B6E360CDCDDFF208 /* FavoriteModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteModelTests.swift; sourceTree = "<group>"; };
+		2D52E9B35F8E1805FB750485 /* DiffEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffEngineTests.swift; sourceTree = "<group>"; };
+		35F84C2AD1591DFEDBCC19C5 /* DiffView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffView.swift; sourceTree = "<group>"; };
 		4041F281094F67EA8B88E617 /* SCPServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCPServiceTests.swift; sourceTree = "<group>"; };
 		442A105ECABC8B5E2AD8ECC5 /* ConnectionTester.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionTester.swift; sourceTree = "<group>"; };
 		46AD79BCF631E766037DB1DC /* AppSettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettingsTests.swift; sourceTree = "<group>"; };
@@ -96,6 +101,7 @@
 		DB7D62364C018F6E9E8563FD /* TransferRecordTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferRecordTests.swift; sourceTree = "<group>"; };
 		E1407FA2F044F51321BC716D /* IPListParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPListParser.swift; sourceTree = "<group>"; };
 		E618252C25C4FDD2F3A61B9D /* BackupJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupJob.swift; sourceTree = "<group>"; };
+		F0086B8B27811D9C3B3A39ED /* DiffEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffEngine.swift; sourceTree = "<group>"; };
 		F565C6DF27919BA953EFFB7E /* TransferListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferListView.swift; sourceTree = "<group>"; };
 		F64BFCB489D0D91A73C4C689 /* NetDropApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetDropApp.swift; sourceTree = "<group>"; };
 		F8A8D9CA645DFDC980761DEA /* Favorite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Favorite.swift; sourceTree = "<group>"; };
@@ -109,6 +115,7 @@
 			children = (
 				46AD79BCF631E766037DB1DC /* AppSettingsTests.swift */,
 				CEE82DD1B87CA4F4BF3EB1A6 /* BackupJobTests.swift */,
+				2D52E9B35F8E1805FB750485 /* DiffEngineTests.swift */,
 				2A57C214B6E360CDCDDFF208 /* FavoriteModelTests.swift */,
 				57175CEEAC58E7000F8E24BE /* FavoritesStoreTests.swift */,
 				9367F3CB4873FE8C36F7474D /* IPListParserTests.swift */,
@@ -146,6 +153,7 @@
 			isa = PBXGroup;
 			children = (
 				08A4CFB6887DE0BEAD1787D8 /* BackupSchedulerView.swift */,
+				35F84C2AD1591DFEDBCC19C5 /* DiffView.swift */,
 				4A64EAF9ADBB031252CB3FD0 /* SettingsView.swift */,
 			);
 			path = Settings;
@@ -201,6 +209,7 @@
 			children = (
 				8A92CF551A8BA310B7EA617F /* BackupScheduler.swift */,
 				442A105ECABC8B5E2AD8ECC5 /* ConnectionTester.swift */,
+				F0086B8B27811D9C3B3A39ED /* DiffEngine.swift */,
 				89D52B2EE7101D645C36AAEF /* FavoritesStore.swift */,
 				E1407FA2F044F51321BC716D /* IPListParser.swift */,
 				BD3954DAAD4ECBD4DDFB46E5 /* KeychainService.swift */,
@@ -312,6 +321,7 @@
 			files = (
 				864C34A7A3462293BC56D44B /* AppSettingsTests.swift in Sources */,
 				C318DE0E63A5D6111E55AA60 /* BackupJobTests.swift in Sources */,
+				EDB21DF1267B9FACDC521D87 /* DiffEngineTests.swift in Sources */,
 				48D56C12870C31232C66BB22 /* FavoriteModelTests.swift in Sources */,
 				95E8335F2C8487FC074C479B /* FavoritesStoreTests.swift in Sources */,
 				AF8E03106C6C726335B961B9 /* IPListParserTests.swift in Sources */,
@@ -334,6 +344,8 @@
 				B42980DF5BA443053D8461BB /* BackupSchedulerView.swift in Sources */,
 				4042548C9FE37FB1D5A07697 /* ConnectionTester.swift in Sources */,
 				A202BD27A391B921B4E2DB6E /* ContentView.swift in Sources */,
+				D3946AC20FAB777B43C67C52 /* DiffEngine.swift in Sources */,
+				B974D9DCD5E3D92C7BE2E619 /* DiffView.swift in Sources */,
 				D90CBA909E20AB297319CA66 /* Favorite.swift in Sources */,
 				0BE28FCD3A0D10C22FF80D9D /* FavoriteEditView.swift in Sources */,
 				B5B0CCC21651AC6686E4146E /* FavoritesStore.swift in Sources */,
