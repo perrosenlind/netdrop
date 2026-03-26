@@ -15,6 +15,8 @@ class TransferManager {
         loadHistory()
     }
 
+    // MARK: - Single transfers
+
     @discardableResult
     func upload(localPath: String, remotePath: String, favorite: Favorite) -> TransferTask {
         let task = TransferTask(
@@ -24,11 +26,7 @@ class TransferManager {
             remotePath: remotePath
         )
         activeTasks.append(task)
-
-        Task {
-            await performTransfer(task: task)
-        }
-
+        Task { await performTransfer(task: task) }
         return task
     }
 
@@ -41,13 +39,34 @@ class TransferManager {
             remotePath: remotePath
         )
         activeTasks.append(task)
-
-        Task {
-            await performTransfer(task: task)
-        }
-
+        Task { await performTransfer(task: task) }
         return task
     }
+
+    // MARK: - Multi-file upload
+
+    func uploadMultiple(localPaths: [String], remotePath: String, favorite: Favorite) {
+        for localPath in localPaths {
+            let fileName = (localPath as NSString).lastPathComponent
+            let fullRemote = remotePath.hasSuffix("/") ? remotePath + fileName : remotePath + "/" + fileName
+            upload(localPath: localPath, remotePath: fullRemote, favorite: favorite)
+        }
+    }
+
+    // MARK: - Multi-destination upload
+
+    func uploadToMultipleDestinations(localPaths: [String], favorites: [Favorite]) {
+        for favorite in favorites {
+            let remotePath = favorite.remotePath
+            for localPath in localPaths {
+                let fileName = (localPath as NSString).lastPathComponent
+                let fullRemote = remotePath.hasSuffix("/") ? remotePath + fileName : remotePath + "/" + fileName
+                upload(localPath: localPath, remotePath: fullRemote, favorite: favorite)
+            }
+        }
+    }
+
+    // MARK: - Task management
 
     func cancelTask(_ task: TransferTask) {
         task.cancel()
@@ -58,7 +77,15 @@ class TransferManager {
         activeTasks.removeAll { $0.status != .inProgress }
     }
 
+    // MARK: - Transfer execution
+
     private func performTransfer(task: TransferTask) async {
+        let onProgress: @Sendable (String) -> Void = { [weak task] progressLine in
+            Task { @MainActor in
+                task?.progressText = progressLine
+            }
+        }
+
         do {
             let result: (output: String, exitCode: Int32)
 
@@ -67,13 +94,15 @@ class TransferManager {
                 result = try await SCPService.upload(
                     localPath: task.localPath,
                     remotePath: task.remotePath,
-                    favorite: task.favorite
+                    favorite: task.favorite,
+                    onProgress: onProgress
                 )
             case .download:
                 result = try await SCPService.download(
                     remotePath: task.remotePath,
                     localPath: task.localPath,
-                    favorite: task.favorite
+                    favorite: task.favorite,
+                    onProgress: onProgress
                 )
             }
 
@@ -117,7 +146,9 @@ class TransferManager {
         guard FileManager.default.fileExists(atPath: historyURL.path) else { return }
         do {
             let data = try Data(contentsOf: historyURL)
-            history = try JSONDecoder().decode([TransferRecord].self, from: data)
+            let decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .iso8601
+            history = try decoder.decode([TransferRecord].self, from: data)
         } catch {
             print("Failed to load history: \(error)")
         }

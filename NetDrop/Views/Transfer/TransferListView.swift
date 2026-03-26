@@ -68,6 +68,12 @@ struct TransferTaskRow: View {
                 Text("\(task.favorite.name) — \(task.remotePath)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
+                if !task.progressText.isEmpty && task.status == .inProgress {
+                    Text(task.progressText)
+                        .font(.system(.caption2, design: .monospaced))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
                 if let error = task.errorMessage {
                     Text(error)
                         .font(.caption2)

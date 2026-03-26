@@ -8,8 +8,12 @@ A lightweight native macOS app for SCP file transfers, built for network enginee
 
 - **Connection Favorites** — Save device profiles with host, port, username, SSH key, and group. Persisted locally as JSON.
 - **Quick Connect** — Connect to any device on the fly (Cmd+K) without saving a favorite. Optionally save it after connecting.
-- **File Upload & Download** — Single-file SCP transfers via the native `scp` command. Browse local files or specify remote paths.
-- **Transfer Log** — Live progress for active transfers plus a history of recent transfers with status and timestamps.
+- **Multi-File Upload** — Select multiple files or drag-and-drop them onto the app to queue transfers.
+- **Multi-Destination Upload** — Push the same file(s) to multiple devices at once (Cmd+Shift+M). Select target devices from your favorites.
+- **Remote File Browser** — Browse remote directories via SSH. Navigate folders, download files, delete with context menu.
+- **Drag & Drop** — Drop files onto the transfer area to start uploading immediately.
+- **Transfer Progress** — Live SCP progress output streamed to the transfer queue as files move.
+- **Transfer Log** — History of all transfers with status and timestamps.
 - **SSH Key Support** — Per-connection key assignment, SSH agent integration, or password auth.
 
 ## Screenshots
@@ -54,7 +58,7 @@ NetDrop is a pure SwiftUI app with no external dependencies. It wraps the system
 See [plan.md](plan.md) for the full phased roadmap.
 
 - [x] Phase 1 — MVP: Favorites, single-file transfer, transfer log, quick connect
-- [ ] Phase 2 — Remote file browser, multi-file queue, drag-and-drop, progress parsing
+- [x] Phase 2 — Remote file browser, multi-file queue, drag-and-drop, multi-destination, progress parsing
 - [ ] Phase 3 — History search, keyboard shortcuts, menubar quick-upload, theming
 - [ ] Phase 4 — Config backup scheduler, diff viewer, FortiManager integration
 

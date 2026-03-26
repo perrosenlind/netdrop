@@ -6,6 +6,7 @@ struct ContentView: View {
 
     @State private var showingAddFavorite = false
     @State private var showingQuickConnect = false
+    @State private var showingMultiDestination = false
     @State private var editingFavorite: Favorite?
 
     var body: some View {
@@ -33,6 +34,9 @@ struct ContentView: View {
         .sheet(isPresented: $showingQuickConnect) {
             QuickConnectView()
         }
+        .sheet(isPresented: $showingMultiDestination) {
+            MultiDestinationView()
+        }
         .sheet(item: $editingFavorite) { favorite in
             FavoriteEditView(mode: .edit(favorite))
         }
@@ -44,6 +48,14 @@ struct ContentView: View {
                     Label("Quick Connect", systemImage: "bolt.horizontal.fill")
                 }
                 .keyboardShortcut("k", modifiers: .command)
+            }
+            ToolbarItem(placement: .primaryAction) {
+                Button {
+                    showingMultiDestination = true
+                } label: {
+                    Label("Multi-Device Upload", systemImage: "arrow.up.to.line.compact")
+                }
+                .keyboardShortcut("m", modifiers: [.command, .shift])
             }
         }
         .frame(minWidth: 700, minHeight: 450)

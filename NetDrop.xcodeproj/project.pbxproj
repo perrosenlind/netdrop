@@ -11,15 +11,19 @@
 		0BE28FCD3A0D10C22FF80D9D /* FavoriteEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087FC28E470232F1B2287C0F /* FavoriteEditView.swift */; };
 		12C82E4906C894F7FAAB5675 /* TransferRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = C742E5B581582B799768DF95 /* TransferRecord.swift */; };
 		381CC18629BF5D785C5E7FD8 /* TransferTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266D87AFB2ECFBA0849D4604 /* TransferTask.swift */; };
+		3ABD2945595E6D1559E32596 /* RemoteFileBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5029A48B9955B60FFF17E11 /* RemoteFileBrowserView.swift */; };
 		6E51FB4FE70F81FDAF088EB0 /* TransferManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23373917EBED54D87B1D5928 /* TransferManager.swift */; };
+		7DDD9E08D35E52E64D38D2D5 /* MultiDestinationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF69E83C230B1994A6947275 /* MultiDestinationView.swift */; };
 		8EC9992D2FE0B4BD98FA1E08 /* TransferListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F565C6DF27919BA953EFFB7E /* TransferListView.swift */; };
 		92D8CFD829E30279E096A11E /* SidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A2B6FB0C8F2ACE4EDE24D6E /* SidebarView.swift */; };
 		A202BD27A391B921B4E2DB6E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDD68B9951BB8984A53A50AC /* ContentView.swift */; };
 		AF9F91BF7629E53137A043D2 /* TransferView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09749137438B83A60DD95755 /* TransferView.swift */; };
 		B5B0CCC21651AC6686E4146E /* FavoritesStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89D52B2EE7101D645C36AAEF /* FavoritesStore.swift */; };
+		CBFA877F7CBABD9E9C54AC91 /* RemoteFileEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AB82093A82D2C77DB6629B8 /* RemoteFileEntry.swift */; };
 		D90CBA909E20AB297319CA66 /* Favorite.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A8D9CA645DFDC980761DEA /* Favorite.swift */; };
 		E1D77F5F9C4777EDD78919ED /* QuickConnectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8289BF2EEB758EBF0BB28FB /* QuickConnectView.swift */; };
 		EE131D6256F38BE575D0B82E /* NetDropApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F64BFCB489D0D91A73C4C689 /* NetDropApp.swift */; };
+		EE2F12DCFC2C70AA789E7DC1 /* SSHService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C954BF0D876AC40505BA23F0 /* SSHService.swift */; };
 		F8BEBA88F0A8BB09E9933E39 /* SCPService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 207A61F679950A9BB1585140 /* SCPService.swift */; };
 /* End PBXBuildFile section */
 
@@ -32,20 +36,26 @@
 		266D87AFB2ECFBA0849D4604 /* TransferTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferTask.swift; sourceTree = "<group>"; };
 		7110B3055DA87FD5CB52CF7D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7A782EC86EE5EB202652ABDC /* NetDrop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NetDrop.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7AB82093A82D2C77DB6629B8 /* RemoteFileEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteFileEntry.swift; sourceTree = "<group>"; };
 		89D52B2EE7101D645C36AAEF /* FavoritesStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesStore.swift; sourceTree = "<group>"; };
 		8A2B6FB0C8F2ACE4EDE24D6E /* SidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarView.swift; sourceTree = "<group>"; };
 		B8289BF2EEB758EBF0BB28FB /* QuickConnectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickConnectView.swift; sourceTree = "<group>"; };
+		C5029A48B9955B60FFF17E11 /* RemoteFileBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteFileBrowserView.swift; sourceTree = "<group>"; };
 		C742E5B581582B799768DF95 /* TransferRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferRecord.swift; sourceTree = "<group>"; };
+		C954BF0D876AC40505BA23F0 /* SSHService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHService.swift; sourceTree = "<group>"; };
 		F565C6DF27919BA953EFFB7E /* TransferListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferListView.swift; sourceTree = "<group>"; };
 		F64BFCB489D0D91A73C4C689 /* NetDropApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetDropApp.swift; sourceTree = "<group>"; };
 		F8A8D9CA645DFDC980761DEA /* Favorite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Favorite.swift; sourceTree = "<group>"; };
 		FDD68B9951BB8984A53A50AC /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		FF69E83C230B1994A6947275 /* MultiDestinationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiDestinationView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
 		1E0BBEB2B52C66128ED7DA28 /* Transfer */ = {
 			isa = PBXGroup;
 			children = (
+				FF69E83C230B1994A6947275 /* MultiDestinationView.swift */,
+				C5029A48B9955B60FFF17E11 /* RemoteFileBrowserView.swift */,
 				F565C6DF27919BA953EFFB7E /* TransferListView.swift */,
 				09749137438B83A60DD95755 /* TransferView.swift */,
 			);
@@ -106,6 +116,7 @@
 			children = (
 				89D52B2EE7101D645C36AAEF /* FavoritesStore.swift */,
 				207A61F679950A9BB1585140 /* SCPService.swift */,
+				C954BF0D876AC40505BA23F0 /* SSHService.swift */,
 				23373917EBED54D87B1D5928 /* TransferManager.swift */,
 			);
 			path = Services;
@@ -115,6 +126,7 @@
 			isa = PBXGroup;
 			children = (
 				F8A8D9CA645DFDC980761DEA /* Favorite.swift */,
+				7AB82093A82D2C77DB6629B8 /* RemoteFileEntry.swift */,
 				C742E5B581582B799768DF95 /* TransferRecord.swift */,
 				266D87AFB2ECFBA0849D4604 /* TransferTask.swift */,
 			);
@@ -192,9 +204,13 @@
 				D90CBA909E20AB297319CA66 /* Favorite.swift in Sources */,
 				0BE28FCD3A0D10C22FF80D9D /* FavoriteEditView.swift in Sources */,
 				B5B0CCC21651AC6686E4146E /* FavoritesStore.swift in Sources */,
+				7DDD9E08D35E52E64D38D2D5 /* MultiDestinationView.swift in Sources */,
 				EE131D6256F38BE575D0B82E /* NetDropApp.swift in Sources */,
 				E1D77F5F9C4777EDD78919ED /* QuickConnectView.swift in Sources */,
+				3ABD2945595E6D1559E32596 /* RemoteFileBrowserView.swift in Sources */,
+				CBFA877F7CBABD9E9C54AC91 /* RemoteFileEntry.swift in Sources */,
 				F8BEBA88F0A8BB09E9933E39 /* SCPService.swift in Sources */,
+				EE2F12DCFC2C70AA789E7DC1 /* SSHService.swift in Sources */,
 				92D8CFD829E30279E096A11E /* SidebarView.swift in Sources */,
 				8EC9992D2FE0B4BD98FA1E08 /* TransferListView.swift in Sources */,
 				6E51FB4FE70F81FDAF088EB0 /* TransferManager.swift in Sources */,

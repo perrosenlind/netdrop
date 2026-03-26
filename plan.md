@@ -123,17 +123,19 @@ A lightweight macOS GUI for SCP transfers, aimed at network engineers who work w
 ## Build Phases
 
 ### Phase 1 — MVP (get it working)
-- [ ] Create SwiftUI macOS app project
-- [ ] Favorites CRUD (add/edit/delete connections, stored in JSON)
-- [ ] Connect to device via system `scp`
-- [ ] Single file upload and download
-- [ ] Basic transfer log
+- [x] Create SwiftUI macOS app project
+- [x] Favorites CRUD (add/edit/delete connections, stored in JSON)
+- [x] Connect to device via system `scp`
+- [x] Single file upload and download
+- [x] Basic transfer log
+- [x] Quick connect
 
 ### Phase 2 — Usable daily driver
-- [ ] Remote file browser (ls via SSH)
-- [ ] Multi-file upload with queue
-- [ ] Drag-and-drop upload
-- [ ] Transfer progress parsing
+- [x] Multi-destination upload (same file to multiple devices at once)
+- [x] Remote file browser (ls via SSH)
+- [x] Multi-file upload with queue
+- [x] Drag-and-drop upload
+- [x] Transfer progress parsing
 - [ ] SSH key selection per favorite
 - [ ] Favorite groups/tags
 
