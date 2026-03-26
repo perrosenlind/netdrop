@@ -67,7 +67,11 @@ The Xcode project is generated from `project.yml` using [xcodegen](https://githu
 xcodegen generate
 ```
 
-Note: xcodegen resets `NetDrop.entitlements` to an empty dict. Restore the entitlements (sandbox disabled, file access, network client) after regenerating.
+Always use `clean build` to clear caches so changes are visible:
+
+```bash
+xcodebuild -project NetDrop.xcodeproj -scheme NetDrop -configuration Debug clean build
+```
 
 ## Build Phases
 

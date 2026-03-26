@@ -21,6 +21,6 @@ targets:
         CODE_SIGN_ENTITLEMENTS: NetDrop/NetDrop.entitlements
         INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.utilities
         INFOPLIST_KEY_CFBundleDisplayName: NetDrop
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS: YES
         GENERATE_INFOPLIST_FILE: YES
-    entitlements:
-      path: NetDrop/NetDrop.entitlements
