@@ -1,0 +1,26 @@
+name: NetDrop
+options:
+  bundleIdPrefix: com.perrosenlind
+  deploymentTarget:
+    macOS: "14.0"
+  xcodeVersion: "16.0"
+  minimumXcodeGenVersion: "2.40"
+
+targets:
+  NetDrop:
+    type: application
+    platform: macOS
+    sources:
+      - NetDrop
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.perrosenlind.NetDrop
+        MARKETING_VERSION: "0.1.0"
+        CURRENT_PROJECT_VERSION: 1
+        SWIFT_VERSION: "5.9"
+        CODE_SIGN_ENTITLEMENTS: NetDrop/NetDrop.entitlements
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.utilities
+        INFOPLIST_KEY_CFBundleDisplayName: NetDrop
+        GENERATE_INFOPLIST_FILE: YES
+    entitlements:
+      path: NetDrop/NetDrop.entitlements
