@@ -144,7 +144,7 @@ A lightweight macOS GUI for SCP transfers, aimed at network engineers who work w
 - [x] Keyboard shortcuts (Cmd+N new connection, Cmd+U upload, etc.)
 - [x] Menu bar quick-upload (drop file on menubar icon → pick favorite → transfer)
 - [ ] Auto-reconnect on timeout
-- [ ] Dark/light theme matching macOS system setting
+- [x] Dark/light theme matching macOS system setting
 - [x] Notifications on transfer complete
 
 ### Phase 4 — Nice to have

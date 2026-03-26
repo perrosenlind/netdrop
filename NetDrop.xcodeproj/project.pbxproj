@@ -10,8 +10,10 @@
 		057D0917F1771978A5EBA663 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7110B3055DA87FD5CB52CF7D /* Assets.xcassets */; };
 		0BE28FCD3A0D10C22FF80D9D /* FavoriteEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087FC28E470232F1B2287C0F /* FavoriteEditView.swift */; };
 		12C82E4906C894F7FAAB5675 /* TransferRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = C742E5B581582B799768DF95 /* TransferRecord.swift */; };
+		2E44C7F3436031E33B9C45BB /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F90D2C429F505FAE6891EAC /* AppSettings.swift */; };
 		381CC18629BF5D785C5E7FD8 /* TransferTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266D87AFB2ECFBA0849D4604 /* TransferTask.swift */; };
 		3ABD2945595E6D1559E32596 /* RemoteFileBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5029A48B9955B60FFF17E11 /* RemoteFileBrowserView.swift */; };
+		59D58B81A9EFFC4BAB9EF875 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A64EAF9ADBB031252CB3FD0 /* SettingsView.swift */; };
 		6E51FB4FE70F81FDAF088EB0 /* TransferManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23373917EBED54D87B1D5928 /* TransferManager.swift */; };
 		7DDD9E08D35E52E64D38D2D5 /* MultiDestinationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF69E83C230B1994A6947275 /* MultiDestinationView.swift */; };
 		8EC9992D2FE0B4BD98FA1E08 /* TransferListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F565C6DF27919BA953EFFB7E /* TransferListView.swift */; };
@@ -35,6 +37,8 @@
 		207A61F679950A9BB1585140 /* SCPService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCPService.swift; sourceTree = "<group>"; };
 		23373917EBED54D87B1D5928 /* TransferManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferManager.swift; sourceTree = "<group>"; };
 		266D87AFB2ECFBA0849D4604 /* TransferTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferTask.swift; sourceTree = "<group>"; };
+		4A64EAF9ADBB031252CB3FD0 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		5F90D2C429F505FAE6891EAC /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
 		7110B3055DA87FD5CB52CF7D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7A782EC86EE5EB202652ABDC /* NetDrop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NetDrop.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7AB82093A82D2C77DB6629B8 /* RemoteFileEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteFileEntry.swift; sourceTree = "<group>"; };
@@ -72,6 +76,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		6FC2D1912024414439700FE0 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				4A64EAF9ADBB031252CB3FD0 /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
 		878FE90245CB47B132D81EA2 /* NetDrop */ = {
 			isa = PBXGroup;
 			children = (
@@ -100,6 +112,7 @@
 				FDD68B9951BB8984A53A50AC /* ContentView.swift */,
 				7F49811148AB38C70829F13D /* MenuBarView.swift */,
 				B8289BF2EEB758EBF0BB28FB /* QuickConnectView.swift */,
+				6FC2D1912024414439700FE0 /* Settings */,
 				961451A9AAF95678C8CDE481 /* Sidebar */,
 				1E0BBEB2B52C66128ED7DA28 /* Transfer */,
 			);
@@ -128,6 +141,7 @@
 		F56A9FEE8CA7CB04BDF7C550 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				5F90D2C429F505FAE6891EAC /* AppSettings.swift */,
 				F8A8D9CA645DFDC980761DEA /* Favorite.swift */,
 				7AB82093A82D2C77DB6629B8 /* RemoteFileEntry.swift */,
 				C742E5B581582B799768DF95 /* TransferRecord.swift */,
@@ -203,6 +217,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2E44C7F3436031E33B9C45BB /* AppSettings.swift in Sources */,
 				A202BD27A391B921B4E2DB6E /* ContentView.swift in Sources */,
 				D90CBA909E20AB297319CA66 /* Favorite.swift in Sources */,
 				0BE28FCD3A0D10C22FF80D9D /* FavoriteEditView.swift in Sources */,
@@ -215,6 +230,7 @@
 				CBFA877F7CBABD9E9C54AC91 /* RemoteFileEntry.swift in Sources */,
 				F8BEBA88F0A8BB09E9933E39 /* SCPService.swift in Sources */,
 				EE2F12DCFC2C70AA789E7DC1 /* SSHService.swift in Sources */,
+				59D58B81A9EFFC4BAB9EF875 /* SettingsView.swift in Sources */,
 				92D8CFD829E30279E096A11E /* SidebarView.swift in Sources */,
 				8EC9992D2FE0B4BD98FA1E08 /* TransferListView.swift in Sources */,
 				6E51FB4FE70F81FDAF088EB0 /* TransferManager.swift in Sources */,

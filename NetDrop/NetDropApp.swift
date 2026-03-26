@@ -4,12 +4,15 @@ import SwiftUI
 struct NetDropApp: App {
     @State private var favoritesStore = FavoritesStore()
     @State private var transferManager = TransferManager()
+    @State private var appSettings = AppSettings()
 
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .environment(favoritesStore)
                 .environment(transferManager)
+                .environment(appSettings)
+                .preferredColorScheme(appSettings.preferredColorScheme)
         }
         .defaultSize(width: 900, height: 600)
         .commands {
@@ -36,6 +39,11 @@ struct NetDropApp: App {
                 }
                 .keyboardShortcut("u", modifiers: [.command])
             }
+        }
+
+        Settings {
+            SettingsView()
+                .environment(appSettings)
         }
 
         MenuBarExtra("NetDrop", systemImage: "arrow.down.circle.fill") {

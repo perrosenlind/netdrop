@@ -19,6 +19,7 @@ A lightweight native macOS app for SCP file transfers, built for network enginee
 - **Menubar Quick-Upload** — Drop files onto the menubar icon to upload without opening the main window.
 - **Keyboard Shortcuts** — Cmd+N (new connection), Cmd+K (quick connect), Cmd+U (upload), Cmd+Shift+M (multi-device).
 - **Notifications** — macOS notifications on transfer complete or failure.
+- **Dark/Light Mode** — System, Light, or Dark theme via Settings (Cmd+,).
 
 ## Screenshots
 
