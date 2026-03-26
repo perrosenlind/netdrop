@@ -21,10 +21,10 @@ struct ContentView: View {
             if let favorite = favoritesStore.selectedFavorite {
                 TransferView(favorite: favorite)
             } else {
-                ContentUnavailableView(
-                    "No Connection Selected",
-                    systemImage: "network",
-                    description: Text("Select a favorite from the sidebar or add a new connection.")
+                WelcomeView(
+                    showingAddFavorite: $showingAddFavorite,
+                    showingQuickConnect: $showingQuickConnect,
+                    showingMultiDestination: $showingMultiDestination
                 )
             }
         }
@@ -45,15 +45,17 @@ struct ContentView: View {
                 Button {
                     showingQuickConnect = true
                 } label: {
-                    Label("Quick Connect", systemImage: "bolt.horizontal.fill")
+                    Label("Quick Connect", systemImage: "bolt.fill")
                 }
+                .help("Connect to a device without saving (Cmd+K)")
             }
             ToolbarItem(placement: .primaryAction) {
                 Button {
                     showingMultiDestination = true
                 } label: {
-                    Label("Multi-Device Upload", systemImage: "arrow.up.to.line.compact")
+                    Label("Multi-Upload", systemImage: "square.and.arrow.up.on.square")
                 }
+                .help("Upload files to multiple devices (Cmd+Shift+M)")
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .showAddFavorite)) { _ in

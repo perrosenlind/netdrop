@@ -11,6 +11,7 @@
 		0BE28FCD3A0D10C22FF80D9D /* FavoriteEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087FC28E470232F1B2287C0F /* FavoriteEditView.swift */; };
 		12C82E4906C894F7FAAB5675 /* TransferRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = C742E5B581582B799768DF95 /* TransferRecord.swift */; };
 		2E44C7F3436031E33B9C45BB /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F90D2C429F505FAE6891EAC /* AppSettings.swift */; };
+		30C21A41AF4688CC21CDECAE /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 118659F6EB13DB3265B9FF81 /* WelcomeView.swift */; };
 		381CC18629BF5D785C5E7FD8 /* TransferTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266D87AFB2ECFBA0849D4604 /* TransferTask.swift */; };
 		3ABD2945595E6D1559E32596 /* RemoteFileBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5029A48B9955B60FFF17E11 /* RemoteFileBrowserView.swift */; };
 		59D58B81A9EFFC4BAB9EF875 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A64EAF9ADBB031252CB3FD0 /* SettingsView.swift */; };
@@ -33,6 +34,7 @@
 /* Begin PBXFileReference section */
 		087FC28E470232F1B2287C0F /* FavoriteEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteEditView.swift; sourceTree = "<group>"; };
 		09749137438B83A60DD95755 /* TransferView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferView.swift; sourceTree = "<group>"; };
+		118659F6EB13DB3265B9FF81 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		1966A8C5E300423783CDC408 /* NetDrop.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NetDrop.entitlements; sourceTree = "<group>"; };
 		207A61F679950A9BB1585140 /* SCPService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCPService.swift; sourceTree = "<group>"; };
 		23373917EBED54D87B1D5928 /* TransferManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferManager.swift; sourceTree = "<group>"; };
@@ -112,6 +114,7 @@
 				FDD68B9951BB8984A53A50AC /* ContentView.swift */,
 				7F49811148AB38C70829F13D /* MenuBarView.swift */,
 				B8289BF2EEB758EBF0BB28FB /* QuickConnectView.swift */,
+				118659F6EB13DB3265B9FF81 /* WelcomeView.swift */,
 				6FC2D1912024414439700FE0 /* Settings */,
 				961451A9AAF95678C8CDE481 /* Sidebar */,
 				1E0BBEB2B52C66128ED7DA28 /* Transfer */,
@@ -237,6 +240,7 @@
 				12C82E4906C894F7FAAB5675 /* TransferRecord.swift in Sources */,
 				381CC18629BF5D785C5E7FD8 /* TransferTask.swift in Sources */,
 				AF9F91BF7629E53137A043D2 /* TransferView.swift in Sources */,
+				30C21A41AF4688CC21CDECAE /* WelcomeView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
