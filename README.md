@@ -9,21 +9,18 @@ A lightweight native macOS app for SCP file transfers, built for network enginee
 - **Connection Favorites** — Save device profiles with host, port, username, SSH key, and group. Persisted locally as JSON.
 - **Quick Connect** — Connect to any device on the fly (Cmd+K) without saving a favorite. Optionally save it after connecting.
 - **Multi-File Upload** — Select multiple files or drag-and-drop them onto the app to queue transfers.
-- **Multi-Destination Upload** — Push the same file(s) to multiple devices at once (Cmd+Shift+M). Select target devices from your favorites.
+- **Multi-Destination Upload** — Push the same file(s) to multiple devices at once (Cmd+Shift+M). Import a list of IPs from a text/CSV file or select from your favorites.
 - **Remote File Browser** — Browse remote directories via SSH. Navigate folders, download files, delete with context menu.
 - **Drag & Drop** — Drop files onto the transfer area to start uploading immediately.
 - **Transfer Progress** — Live SCP progress output streamed to the transfer queue as files move.
-- **Transfer Log** — History of all transfers with search and status filtering.
+- **Transfer Log** — History of all transfers with search and status filtering (All/Completed/Failed).
 - **SSH Key Picker** — Browse for key files, per-connection assignment, SSH agent integration.
 - **Favorite Groups** — Organize connections into groups with quick-assign buttons.
 - **Menubar Quick-Upload** — Drop files onto the menubar icon to upload without opening the main window.
 - **Keyboard Shortcuts** — Cmd+N (new connection), Cmd+K (quick connect), Cmd+U (upload), Cmd+Shift+M (multi-device).
 - **Notifications** — macOS notifications on transfer complete or failure.
 - **Dark/Light Mode** — System, Light, or Dark theme via Settings (Cmd+,).
-
-## Screenshots
-
-*Coming soon*
+- **Welcome Screen** — Action cards and shortcut reference when no connection is selected.
 
 ## Requirements
 
@@ -50,6 +47,27 @@ Or build from the command line:
 xcodebuild -project NetDrop.xcodeproj -scheme NetDrop -configuration Debug build
 ```
 
+## Testing
+
+```bash
+xcodebuild -project NetDrop.xcodeproj -scheme NetDropTests -configuration Debug test
+```
+
+65 unit tests covering all models, services, and stores:
+
+| Suite | Tests | Coverage |
+|---|---|---|
+| IPListParserTests | 15 | All parsing formats, comments, dedup, edge cases |
+| RemoteFileEntryTests | 10 | Icons for every file type, formatted sizes |
+| FavoritesStoreTests | 7 | Full CRUD, groups, selection clearing |
+| TransferManagerTests | 7 | Single/multi upload, multi-dest, cancel, clear |
+| FavoriteModelTests | 5 | Defaults, Codable for all auth types, equality |
+| AppSettingsTests | 5 | All appearance modes, persistence |
+| SCPServiceTests | 5 | Upload/download with real scp, progress, auth |
+| SSHServiceTests | 4 | ls/mkdir/rm/rename with real ssh |
+| TransferTaskTests | 4 | Init, cancel, process attachment, properties |
+| TransferRecordTests | 4 | Defaults, Codable, directions, statuses |
+
 ## Architecture
 
 NetDrop is a pure SwiftUI app with no external dependencies. It wraps the system `scp` and `ssh` commands via `Process()` — no need to bundle SSH libraries.
@@ -64,7 +82,7 @@ See [plan.md](plan.md) for the full phased roadmap.
 
 - [x] Phase 1 — MVP: Favorites, single-file transfer, transfer log, quick connect
 - [x] Phase 2 — Remote file browser, multi-file queue, drag-and-drop, multi-destination, progress parsing
-- [x] Phase 3 — History search, keyboard shortcuts, menubar quick-upload, notifications
+- [x] Phase 3 — History search, keyboard shortcuts, menubar quick-upload, notifications, dark/light mode
 - [ ] Phase 4 — Config backup scheduler, diff viewer, FortiManager integration
 
 ## License
