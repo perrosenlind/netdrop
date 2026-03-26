@@ -6,19 +6,21 @@ A lightweight native macOS app for SCP file transfers, built for network enginee
 
 ## Features
 
-- **Connection Favorites** — Save device profiles with host, port, username, SSH key, and group. Persisted locally as JSON.
-- **Quick Connect** — Connect to any device on the fly (Cmd+K) without saving a favorite. Optionally save it after connecting.
+- **Password & Key Authentication** — Connect with username/password (via `sshpass`), SSH key, or SSH agent. Passwords stored securely in macOS Keychain.
+- **Connection Favorites** — Save device profiles with host, port, username, auth method, and group. Persisted locally as JSON.
+- **Quick Connect** — Connect to any device on the fly (Cmd+K) with username and password. Optionally save as a favorite.
 - **Multi-File Upload** — Select multiple files or drag-and-drop them onto the app to queue transfers.
-- **Multi-Destination Upload** — Push the same file(s) to multiple devices at once (Cmd+Shift+M). Import a list of IPs from a text/CSV file or select from your favorites.
+- **Multi-Destination Upload** — Push the same file(s) to multiple devices at once (Cmd+Shift+M). Import a list of IPs from a text/CSV file with shared credentials, or select from your favorites.
 - **Remote File Browser** — Browse remote directories via SSH. Navigate folders, download files, delete with context menu.
+- **Connection Status** — Live green/red indicator showing if a device is reachable, with friendly error messages (e.g. "Connection refused — SSH is not running on this host").
 - **Drag & Drop** — Drop files onto the transfer area to start uploading immediately.
 - **Transfer Progress** — Live SCP progress output streamed to the transfer queue as files move.
 - **Transfer Log** — History of all transfers with search and status filtering (All/Completed/Failed).
 - **SSH Key Picker** — Browse for key files, per-connection assignment, SSH agent integration.
 - **Favorite Groups** — Organize connections into groups with quick-assign buttons.
 - **Menubar Quick-Upload** — Drop files onto the menubar icon to upload without opening the main window.
-- **Keyboard Shortcuts** — Cmd+N (new connection), Cmd+K (quick connect), Cmd+U (upload), Cmd+Shift+M (multi-device).
-- **Notifications** — macOS notifications on transfer complete or failure.
+- **Keyboard Shortcuts** — Cmd+N (new connection), Cmd+K (quick connect), Cmd+U (upload), Cmd+Shift+M (multi-device), Cmd+, (settings).
+- **Notifications** — macOS notifications on transfer complete or failure with error details.
 - **Dark/Light Mode** — System, Light, or Dark theme via Settings (Cmd+,).
 - **Welcome Screen** — Action cards and shortcut reference when no connection is selected.
 
@@ -27,12 +29,14 @@ A lightweight native macOS app for SCP file transfers, built for network enginee
 - macOS 14 (Sonoma) or later
 - Xcode 15+ (for building)
 - [xcodegen](https://github.com/yonaskolb/XcodeGen) (for project generation)
+- [sshpass](https://sourceforge.net/projects/sshpass/) (for password authentication)
 
 ## Getting Started
 
 ```bash
-# Install xcodegen
+# Install dependencies
 brew install xcodegen
+brew install hudochenkov/sshpass/sshpass
 
 # Generate Xcode project
 xcodegen generate
@@ -70,11 +74,15 @@ xcodebuild -project NetDrop.xcodeproj -scheme NetDropTests -configuration Debug 
 
 ## Architecture
 
-NetDrop is a pure SwiftUI app with no external dependencies. It wraps the system `scp` and `ssh` commands via `Process()` — no need to bundle SSH libraries.
+NetDrop is a pure SwiftUI app. It wraps the system `scp` and `ssh` commands via `Process()`, using `sshpass` for password authentication. No SSH libraries are bundled.
 
 - **Frontend:** SwiftUI with `NavigationSplitView`, native macOS controls
 - **Backend:** `@Observable` Swift models, JSON persistence, `Process()`-based SCP/SSH
-- **Data:** Stored in `~/Library/Application Support/NetDrop/`
+- **Data:** Favorites and settings in `~/Library/Application Support/NetDrop/`, passwords in macOS Keychain
+
+## Security
+
+Passwords are **never stored in plaintext files**. All credentials are saved to the macOS Keychain using the Security framework (`SecItemAdd`/`SecItemCopyMatching`) with `kSecAttrAccessibleWhenUnlocked` protection. Favorite profiles (host, port, username, auth method) are stored as JSON — passwords are not included in the JSON file.
 
 ## Roadmap
 
@@ -82,7 +90,7 @@ See [plan.md](plan.md) for the full phased roadmap.
 
 - [x] Phase 1 — MVP: Favorites, single-file transfer, transfer log, quick connect
 - [x] Phase 2 — Remote file browser, multi-file queue, drag-and-drop, multi-destination, progress parsing
-- [x] Phase 3 — History search, keyboard shortcuts, menubar quick-upload, notifications, dark/light mode
+- [x] Phase 3 — History search, keyboard shortcuts, menubar quick-upload, notifications, dark/light mode, password auth
 - [ ] Phase 4 — Config backup scheduler, diff viewer, FortiManager integration
 
 ## License
