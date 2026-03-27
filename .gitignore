@@ -19,3 +19,5 @@ xcuserdata/
 .build/
 Packages/
 Package.resolved
+NetDrop.app.zip
+build/
