@@ -9,11 +9,13 @@ if [ ! -d "NetDrop.xcodeproj" ]; then
     xcodegen generate
 fi
 
-# Build release
+# Build release (ad-hoc signing for distribution)
 xcodebuild -project NetDrop.xcodeproj \
     -scheme NetDrop \
     -configuration Release \
     -derivedDataPath build \
+    CODE_SIGN_IDENTITY="-" \
+    CODE_SIGNING_ALLOWED=NO \
     clean build
 
 APP_PATH="build/Build/Products/Release/NetDrop.app"
