@@ -10,6 +10,8 @@ struct SidebarView: View {
     @State private var newFolderName = ""
     @State private var renamingGroup: String?
     @State private var renameText = ""
+    @State private var backupStatus: (favoriteID: UUID, message: String)?
+    @State private var viewingConfig: ConfigViewerItem?
     var body: some View {
         List {
             // Grouped favorites
@@ -82,6 +84,9 @@ struct SidebarView: View {
                 favoritesStore.renameGroup(from: group, to: renameText)
             }
         }
+        .sheet(item: $viewingConfig) { item in
+            ConfigViewerView(title: item.title, content: item.content)
+        }
     }
 
     private func favoriteItem(_ favorite: Favorite) -> some View {
@@ -149,6 +154,18 @@ struct SidebarView: View {
             editingFavorite = favorite
         }
 
+        Divider()
+
+        Button("Backup Config…") {
+            backupConfig(favorite)
+        }
+
+        if let status = backupStatus, status.favoriteID == favorite.id {
+            Text(status.message)
+        }
+
+        Divider()
+
         if !favoritesStore.groups.isEmpty {
             Menu("Move to Folder") {
                 ForEach(favoritesStore.groups, id: \.self) { group in
@@ -174,6 +191,58 @@ struct SidebarView: View {
         Divider()
         Button("Delete", role: .destructive) {
             favoritesStore.delete(favorite)
+        }
+    }
+
+    private func backupConfig(_ favorite: Favorite) {
+        // Use NSSavePanel so user picks where to save
+        let panel = NSSavePanel()
+        let timestamp = ISO8601DateFormatter().string(from: Date())
+            .replacingOccurrences(of: ":", with: "-")
+        let safeName = favorite.name.replacingOccurrences(of: "/", with: "_")
+        panel.nameFieldStringValue = "\(safeName)_\(timestamp).conf"
+        panel.canCreateDirectories = true
+        panel.allowedContentTypes = [.text]
+
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+
+        backupStatus = (favoriteID: favorite.id, message: "Backing up…")
+
+        Task {
+            do {
+                // Use legacy SCP for FortiGate-style devices (sys_config)
+                let result = try await SCPService.download(
+                    remotePath: "sys_config",
+                    localPath: url.path,
+                    favorite: favorite,
+                    legacySCP: true
+                )
+
+                await MainActor.run {
+                    if result.exitCode == 0 {
+                        backupStatus = (favoriteID: favorite.id, message: "Backup saved")
+                        // Offer to view the config
+                        if let content = try? String(contentsOf: url, encoding: .utf8) {
+                            viewingConfig = ConfigViewerItem(
+                                title: "\(favorite.name) — Config Backup",
+                                content: content
+                            )
+                        }
+                    } else {
+                        backupStatus = (favoriteID: favorite.id, message: "Failed: \(ConnectionTester.friendlyError(from: result.output, authMethod: favorite.authMethod))")
+                    }
+                    // Clear status after a few seconds
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                        if backupStatus?.favoriteID == favorite.id {
+                            backupStatus = nil
+                        }
+                    }
+                }
+            } catch {
+                await MainActor.run {
+                    backupStatus = (favoriteID: favorite.id, message: "Error: \(error.localizedDescription)")
+                }
+            }
         }
     }
 }

@@ -1,4 +1,40 @@
 import SwiftUI
+import AppKit
+
+// MARK: - NSTextView wrapper for fast syntax-highlighted config rendering
+
+struct HighlightedTextView: NSViewRepresentable {
+    let attributedString: NSAttributedString
+
+    func makeNSView(context: Context) -> NSScrollView {
+        let scrollView = NSTextView.scrollableTextView()
+        let textView = scrollView.documentView as! NSTextView
+
+        textView.isEditable = false
+        textView.isSelectable = true
+        textView.usesFindBar = true
+        textView.isIncrementalSearchingEnabled = true
+        textView.textContainerInset = NSSize(width: 12, height: 8)
+        textView.backgroundColor = .textBackgroundColor
+        textView.drawsBackground = true
+        textView.isAutomaticQuoteSubstitutionEnabled = false
+        textView.isAutomaticDashSubstitutionEnabled = false
+        textView.isAutomaticTextReplacementEnabled = false
+
+        // Enable line wrapping
+        textView.textContainer?.widthTracksTextView = true
+        textView.isHorizontallyResizable = false
+
+        return scrollView
+    }
+
+    func updateNSView(_ scrollView: NSScrollView, context: Context) {
+        let textView = scrollView.documentView as! NSTextView
+        textView.textStorage?.setAttributedString(attributedString)
+    }
+}
+
+// MARK: - Config Viewer
 
 struct ConfigViewerView: View {
     @Environment(\.dismiss) private var dismiss
@@ -6,19 +42,10 @@ struct ConfigViewerView: View {
     let title: String
     let content: String
 
-    @State private var highlighted: AttributedString?
-    @State private var searchText = ""
-    @State private var showLineNumbers = true
+    @State private var highlighted: NSAttributedString?
 
-    private var lines: [String] {
-        content.components(separatedBy: "\n")
-    }
-
-    private var filteredLineIndices: [Int] {
-        if searchText.isEmpty {
-            return Array(0..<lines.count)
-        }
-        return lines.indices.filter { lines[$0].localizedCaseInsensitiveContains(searchText) }
+    private var lineCount: Int {
+        content.components(separatedBy: "\n").count
     }
 
     var body: some View {
@@ -29,15 +56,17 @@ struct ConfigViewerView: View {
                     .foregroundStyle(.secondary)
                 Text(title)
                     .font(.headline)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
                 Spacer()
 
-                Text("\(lines.count) lines")
+                Text("\(lineCount) lines")
                     .font(.caption)
                     .foregroundStyle(.tertiary)
 
-                Toggle("Lines", isOn: $showLineNumbers)
-                    .toggleStyle(.checkbox)
-                    .controlSize(.small)
+                Text("Cmd+F to search")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
 
                 Button {
                     dismiss()
@@ -52,86 +81,23 @@ struct ConfigViewerView: View {
             }
             .padding()
 
-            // Search bar
-            HStack {
-                Image(systemName: "magnifyingglass")
-                    .foregroundStyle(.secondary)
-                TextField("Search config...", text: $searchText)
-                    .textFieldStyle(.plain)
-                if !searchText.isEmpty {
-                    Text("\(filteredLineIndices.count) matches")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                    Button {
-                        searchText = ""
-                    } label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundStyle(.secondary)
-                    }
-                    .buttonStyle(.borderless)
-                }
-            }
-            .padding(.horizontal)
-            .padding(.vertical, 6)
-            .background(.bar)
-
             Divider()
 
             // Config content
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 0) {
-                    ForEach(filteredLineIndices, id: \.self) { index in
-                        HStack(alignment: .top, spacing: 0) {
-                            if showLineNumbers {
-                                Text("\(index + 1)")
-                                    .font(.system(.caption2, design: .monospaced))
-                                    .foregroundStyle(.tertiary)
-                                    .frame(width: 40, alignment: .trailing)
-                                    .padding(.trailing, 8)
-
-                                Divider()
-                                    .frame(height: 16)
-                                    .padding(.trailing, 8)
-                            }
-
-                            if let highlighted {
-                                // Use highlighted version - extract the line
-                                Text(highlightedLine(index))
-                                    .font(.system(.body, design: .monospaced))
-                                    .textSelection(.enabled)
-                            } else {
-                                Text(lines[index])
-                                    .font(.system(.body, design: .monospaced))
-                                    .textSelection(.enabled)
-                            }
-
-                            Spacer(minLength: 0)
-                        }
-                        .padding(.horizontal, showLineNumbers ? 4 : 12)
-                        .padding(.vertical, 1)
-                        .background(
-                            !searchText.isEmpty && lines[index].localizedCaseInsensitiveContains(searchText)
-                                ? Color.yellow.opacity(0.1)
-                                : Color.clear
-                        )
-                    }
-                }
-                .padding(.vertical, 4)
+            if let highlighted {
+                HighlightedTextView(attributedString: highlighted)
+            } else {
+                ProgressView("Highlighting…")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
         .frame(minWidth: 700, minHeight: 500)
         .task {
-            // Highlight in background
             let text = content
-            let result = await Task.detached {
+            let result = await Task.detached(priority: .userInitiated) {
                 ConfigSyntaxHighlighter.highlight(text)
             }.value
             highlighted = result
         }
-    }
-
-    /// Get highlighted attributed string for a single line
-    private func highlightedLine(_ index: Int) -> AttributedString {
-        ConfigSyntaxHighlighter.highlight(lines[index])
     }
 }

@@ -1,37 +1,46 @@
-import SwiftUI
+import AppKit
 
 struct ConfigSyntaxHighlighter {
-    /// Highlight a FortiOS (or generic) config string into an AttributedString
-    static func highlight(_ text: String) -> AttributedString {
-        var result = AttributedString()
+    /// Highlight a FortiOS config into an NSAttributedString for use with NSTextView
+    static func highlight(_ text: String, fontSize: CGFloat = 13) -> NSAttributedString {
+        let result = NSMutableAttributedString()
+        let mono = NSFont.monospacedSystemFont(ofSize: fontSize, weight: .regular)
+        let monoBold = NSFont.monospacedSystemFont(ofSize: fontSize, weight: .bold)
+        let defaultAttrs: [NSAttributedString.Key: Any] = [
+            .font: mono,
+            .foregroundColor: NSColor.textColor
+        ]
 
         let lines = text.components(separatedBy: "\n")
         for (index, line) in lines.enumerated() {
-            result.append(highlightLine(line))
+            result.append(highlightLine(line, mono: mono, monoBold: monoBold, defaultAttrs: defaultAttrs))
             if index < lines.count - 1 {
-                result.append(AttributedString("\n"))
+                result.append(NSAttributedString(string: "\n", attributes: defaultAttrs))
             }
         }
 
         return result
     }
 
-    private static func highlightLine(_ line: String) -> AttributedString {
+    private static func highlightLine(
+        _ line: String,
+        mono: NSFont,
+        monoBold: NSFont,
+        defaultAttrs: [NSAttributedString.Key: Any]
+    ) -> NSAttributedString {
         let trimmed = line.trimmingCharacters(in: .whitespaces)
 
-        // Comment lines
         if trimmed.hasPrefix("#") {
-            return styled(line, color: .gray)
+            return NSAttributedString(string: line, attributes: attrs(mono, .gray))
         }
 
-        // Empty lines
         if trimmed.isEmpty {
-            return AttributedString(line)
+            return NSAttributedString(string: line, attributes: defaultAttrs)
         }
 
-        // Build attributed string preserving leading whitespace
-        let leadingSpaces = String(line.prefix(while: { $0 == " " || $0 == "\t" }))
-        var result = AttributedString(leadingSpaces)
+        let result = NSMutableAttributedString()
+        let leading = String(line.prefix(while: { $0 == " " || $0 == "\t" }))
+        result.append(NSAttributedString(string: leading, attributes: defaultAttrs))
 
         let parts = trimmed.split(separator: " ", maxSplits: 1, omittingEmptySubsequences: false)
         let keyword = String(parts.first ?? "")
@@ -39,88 +48,87 @@ struct ConfigSyntaxHighlighter {
 
         switch keyword.lowercased() {
         case "config":
-            result.append(styled(keyword, color: .purple, bold: true))
+            result.append(NSAttributedString(string: keyword, attributes: attrs(monoBold, .systemPurple)))
             if !rest.isEmpty {
-                result.append(styled(" ", color: .primary))
-                result.append(styled(rest, color: .orange))
+                result.append(NSAttributedString(string: " ", attributes: defaultAttrs))
+                result.append(NSAttributedString(string: rest, attributes: attrs(mono, .systemOrange)))
             }
 
         case "end", "next":
-            result.append(styled(keyword, color: .purple, bold: true))
+            result.append(NSAttributedString(string: keyword, attributes: attrs(monoBold, .systemPurple)))
 
         case "edit":
-            result.append(styled(keyword, color: .blue, bold: true))
+            result.append(NSAttributedString(string: keyword, attributes: attrs(monoBold, .systemBlue)))
             if !rest.isEmpty {
-                result.append(styled(" ", color: .primary))
-                result.append(highlightValue(rest))
+                result.append(NSAttributedString(string: " ", attributes: defaultAttrs))
+                result.append(highlightValue(rest, mono: mono, defaultAttrs: defaultAttrs))
             }
 
         case "set", "unset":
-            result.append(styled(keyword, color: .blue))
+            result.append(NSAttributedString(string: keyword, attributes: attrs(mono, .systemBlue)))
             if !rest.isEmpty {
-                // Split into variable name and value
                 let setParts = rest.split(separator: " ", maxSplits: 1, omittingEmptySubsequences: false)
                 let varName = String(setParts.first ?? "")
                 let value = setParts.count > 1 ? String(setParts[1]) : ""
 
-                result.append(styled(" ", color: .primary))
-                result.append(styled(varName, color: .cyan))
+                result.append(NSAttributedString(string: " ", attributes: defaultAttrs))
+                result.append(NSAttributedString(string: varName, attributes: attrs(mono, .systemCyan)))
                 if !value.isEmpty {
-                    result.append(styled(" ", color: .primary))
-                    result.append(highlightValue(value))
+                    result.append(NSAttributedString(string: " ", attributes: defaultAttrs))
+                    result.append(highlightValue(value, mono: mono, defaultAttrs: defaultAttrs))
                 }
             }
 
         case "append", "select", "rename", "move", "clone", "delete", "purge", "get", "show", "diagnose", "execute":
-            result.append(styled(keyword, color: .blue))
+            result.append(NSAttributedString(string: keyword, attributes: attrs(mono, .systemBlue)))
             if !rest.isEmpty {
-                result.append(styled(" ", color: .primary))
-                result.append(highlightValue(rest))
+                result.append(NSAttributedString(string: " ", attributes: defaultAttrs))
+                result.append(highlightValue(rest, mono: mono, defaultAttrs: defaultAttrs))
             }
 
         default:
-            result.append(highlightValue(trimmed))
+            result.append(highlightValue(trimmed, mono: mono, defaultAttrs: defaultAttrs))
         }
 
         return result
     }
 
-    /// Highlight a value string — detects quoted strings, IPs, numbers, booleans
-    private static func highlightValue(_ value: String) -> AttributedString {
-        var result = AttributedString()
+    private static func highlightValue(
+        _ value: String,
+        mono: NSFont,
+        defaultAttrs: [NSAttributedString.Key: Any]
+    ) -> NSAttributedString {
+        let result = NSMutableAttributedString()
         var remaining = value[value.startIndex...]
 
         while !remaining.isEmpty {
-            // Skip whitespace
             if remaining.first?.isWhitespace == true {
                 let space = remaining.prefix(while: { $0.isWhitespace })
-                result.append(AttributedString(String(space)))
+                result.append(NSAttributedString(string: String(space), attributes: defaultAttrs))
                 remaining = remaining[space.endIndex...]
                 continue
             }
 
-            // Quoted string
             if remaining.first == "\"" {
                 if let endQuote = remaining.dropFirst().firstIndex(of: "\"") {
                     let quoted = remaining[remaining.startIndex...endQuote]
-                    result.append(styled(String(quoted), color: .green))
+                    result.append(NSAttributedString(string: String(quoted), attributes: attrs(mono, .systemGreen)))
                     remaining = remaining[remaining.index(after: endQuote)...]
                     continue
                 }
             }
 
-            // Token (non-whitespace)
             let token = remaining.prefix(while: { !$0.isWhitespace })
             let tokenStr = String(token)
 
-            if isIPAddress(tokenStr) || isSubnetMask(tokenStr) || isCIDR(tokenStr) {
-                result.append(styled(tokenStr, color: .yellow))
+            if isIPAddress(tokenStr) || isCIDR(tokenStr) {
+                result.append(NSAttributedString(string: tokenStr, attributes: attrs(mono, .systemYellow)))
             } else if tokenStr == "enable" || tokenStr == "disable" {
-                result.append(styled(tokenStr, color: .orange))
+                result.append(NSAttributedString(string: tokenStr, attributes: attrs(mono, .systemOrange)))
             } else if Int(tokenStr) != nil {
-                result.append(styled(tokenStr, color: .mint))
+                result.append(NSAttributedString(string: tokenStr, attributes: attrs(mono, .systemMint)))
             } else {
-                result.append(styled(tokenStr, color: .primary))
+                result.append(NSAttributedString(string: tokenStr, attributes: defaultAttrs))
             }
 
             remaining = remaining[token.endIndex...]
@@ -129,32 +137,19 @@ struct ConfigSyntaxHighlighter {
         return result
     }
 
-    private static func styled(_ text: String, color: Color, bold: Bool = false) -> AttributedString {
-        var attr = AttributedString(text)
-        attr.foregroundColor = color
-        if bold {
-            attr.font = .system(.body, design: .monospaced).bold()
-        }
-        return attr
+    private static func attrs(_ font: NSFont, _ color: NSColor) -> [NSAttributedString.Key: Any] {
+        [.font: font, .foregroundColor: color]
     }
 
     private static func isIPAddress(_ s: String) -> Bool {
         let parts = s.split(separator: ".")
         guard parts.count == 4 else { return false }
-        return parts.allSatisfy { part in
-            guard let n = Int(part) else { return false }
-            return (0...255).contains(n)
-        }
-    }
-
-    private static func isSubnetMask(_ s: String) -> Bool {
-        isIPAddress(s) && (s.hasPrefix("255.") || s == "0.0.0.0")
+        return parts.allSatisfy { Int($0) != nil && (0...255).contains(Int($0)!) }
     }
 
     private static func isCIDR(_ s: String) -> Bool {
         let parts = s.split(separator: "/")
-        guard parts.count == 2 else { return false }
-        guard isIPAddress(String(parts[0])) else { return false }
+        guard parts.count == 2, isIPAddress(String(parts[0])) else { return false }
         guard let prefix = Int(parts[1]), (0...128).contains(prefix) else { return false }
         return true
     }
