@@ -39,6 +39,11 @@ struct NetDropApp: App {
                 }
                 .keyboardShortcut("m", modifiers: [.command, .shift])
 
+                Button("Backups") {
+                    NotificationCenter.default.post(name: .showBackups, object: nil)
+                }
+                .keyboardShortcut("b", modifiers: [.command])
+
                 Divider()
 
                 Button("Upload Files…") {
@@ -66,6 +71,7 @@ extension Notification.Name {
     static let showAddFavorite = Notification.Name("showAddFavorite")
     static let showQuickConnect = Notification.Name("showQuickConnect")
     static let showMultiDestination = Notification.Name("showMultiDestination")
+    static let showBackups = Notification.Name("showBackups")
     static let triggerUpload = Notification.Name("triggerUpload")
 }
 

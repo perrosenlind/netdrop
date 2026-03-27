@@ -22,10 +22,10 @@ A lightweight native macOS app for SCP file transfers, built for network enginee
 - **Keyboard Shortcuts** — Cmd+N (new connection), Cmd+K (quick connect), Cmd+U (upload), Cmd+Shift+M (multi-device), Cmd+, (settings).
 - **Notifications** — macOS notifications on transfer complete or failure with error details.
 - **Dark/Light Mode** — System, Light, or Dark theme via Settings (Cmd+,).
-- **Config Backup Scheduler** — Schedule automatic config backups via SCP on intervals (15min to daily). FortiGate support with `sys_config` download and legacy SCP protocol (`-O`). Generic device type for custom remote paths. Configurable backup directory in Settings.
-- **Config Restore** — Restore config files to devices via SCP upload. FortiGate restores to `fgt-restore-config` with reboot warning. Right-click any backup result to restore.
-- **Config Viewer** — View config files with FortiOS syntax highlighting using native NSTextView. Color-coded keywords (`config`, `set`, `edit`, `end`), strings, IP addresses, and values. Built-in Cmd+F search. Right-click backup results or use ad-hoc backup from sidebar.
-- **Ad-hoc Config Backup** — Right-click any favorite in the sidebar to backup its config via SCP. Choose save location, then view the config immediately with syntax highlighting.
+- **Backup Manager** — Full backup view (Cmd+B) with file browser, job scheduler, ad-hoc backup, config viewer, and restore — all in one pane. Config files grouped by device with timestamps and sizes.
+- **Config Backup** — Quick backup from the sidebar or backup view. Scheduled jobs run SCP downloads on intervals (15min to daily). FortiGate support with `sys_config` and legacy SCP (`-O`). Configurable backup directory.
+- **Config Restore** — Restore configs via SCP upload. FortiGate restores to `fgt-restore-config` with reboot warning.
+- **Config Viewer** — Native NSTextView with FortiOS syntax highlighting. Color-coded keywords, strings, IPs, values. Built-in Cmd+F search.
 - **Side-by-Side Diff** — Compare two config files with LCS-based diff. Color-coded added/removed/modified lines, line numbers, summary stats. Pick from backup history or browse local files.
 - **Welcome Screen** — Action cards and shortcut reference when no connection is selected.
 

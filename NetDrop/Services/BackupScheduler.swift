@@ -252,4 +252,72 @@ class BackupScheduler {
     func backupsForFavorite(_ favoriteID: UUID) -> [BackupResult] {
         results.filter { $0.favoriteID == favoriteID && $0.status == .success }
     }
+
+    /// Scan backup directory for config files, grouped by device name
+    func scanBackupFiles() -> [String: [BackupFileItem]] {
+        // Ensure directory exists
+        try? FileManager.default.createDirectory(at: backupDir, withIntermediateDirectories: true)
+
+        guard let urls = try? FileManager.default.contentsOfDirectory(
+            at: backupDir,
+            includingPropertiesForKeys: [.fileSizeKey, .contentModificationDateKey],
+            options: [.skipsHiddenFiles]
+        ) else { return [:] }
+
+        let items = urls.compactMap { BackupFileItem.parse(url: $0) }
+        var grouped: [String: [BackupFileItem]] = [:]
+        for item in items {
+            grouped[item.deviceName, default: []].append(item)
+        }
+        // Sort each group newest first
+        for key in grouped.keys {
+            grouped[key]?.sort { ($0.timestamp ?? .distantPast) > ($1.timestamp ?? .distantPast) }
+        }
+        return grouped
+    }
+
+    /// Run an ad-hoc backup for a single favorite
+    func adHocBackup(
+        favorite: Favorite,
+        remotePath: String,
+        deviceType: DeviceType
+    ) async -> (success: Bool, filePath: String?, error: String?) {
+        let timestamp = ISO8601DateFormatter().string(from: Date())
+            .replacingOccurrences(of: ":", with: "-")
+        let safeName = favorite.name.replacingOccurrences(of: "/", with: "_")
+        let fileName = "\(safeName)_\(timestamp).conf"
+
+        try? FileManager.default.createDirectory(at: backupDir, withIntermediateDirectories: true)
+        let filePath = backupDir.appendingPathComponent(fileName)
+
+        do {
+            let result = try await SCPService.download(
+                remotePath: remotePath,
+                localPath: filePath.path,
+                favorite: favorite,
+                legacySCP: deviceType == .fortigate
+            )
+
+            if result.exitCode == 0 {
+                let backupResult = BackupResult(
+                    jobID: UUID(),
+                    jobName: "Ad-hoc",
+                    favoriteID: favorite.id,
+                    favoriteName: favorite.name,
+                    host: favorite.host,
+                    status: .success,
+                    filePath: filePath.path
+                )
+                await MainActor.run {
+                    results.insert(backupResult, at: 0)
+                    saveResults()
+                }
+                return (true, filePath.path, nil)
+            } else {
+                return (false, nil, ConnectionTester.friendlyError(from: result.output, authMethod: favorite.authMethod))
+            }
+        } catch {
+            return (false, nil, error.localizedDescription)
+        }
+    }
 }

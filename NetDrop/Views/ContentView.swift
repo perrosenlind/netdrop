@@ -1,5 +1,10 @@
 import SwiftUI
 
+enum DetailMode {
+    case devices
+    case backups
+}
+
 struct ContentView: View {
     @Environment(FavoritesStore.self) private var favoritesStore
     @Environment(TransferManager.self) private var transferManager
@@ -7,9 +12,9 @@ struct ContentView: View {
     @State private var showingAddFavorite = false
     @State private var showingQuickConnect = false
     @State private var showingMultiDestination = false
-    @State private var showingBackupScheduler = false
     @State private var showingDiffPicker = false
     @State private var editingFavorite: Favorite?
+    @State private var detailMode: DetailMode = .devices
 
     var body: some View {
         @Bindable var store = favoritesStore
@@ -20,14 +25,19 @@ struct ContentView: View {
                 editingFavorite: $editingFavorite
             )
         } detail: {
-            if let favorite = favoritesStore.selectedFavorite {
-                TransferView(favorite: favorite)
-            } else {
-                WelcomeView(
-                    showingAddFavorite: $showingAddFavorite,
-                    showingQuickConnect: $showingQuickConnect,
-                    showingMultiDestination: $showingMultiDestination
-                )
+            switch detailMode {
+            case .devices:
+                if let favorite = favoritesStore.selectedFavorite {
+                    TransferView(favorite: favorite)
+                } else {
+                    WelcomeView(
+                        showingAddFavorite: $showingAddFavorite,
+                        showingQuickConnect: $showingQuickConnect,
+                        showingMultiDestination: $showingMultiDestination
+                    )
+                }
+            case .backups:
+                BackupMainView()
             }
         }
         .sheet(isPresented: $showingAddFavorite) {
@@ -38,10 +48,6 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showingMultiDestination) {
             MultiDestinationView()
-        }
-        .sheet(isPresented: $showingBackupScheduler) {
-            BackupSchedulerView()
-                .frame(width: 600, height: 500)
         }
         .sheet(isPresented: $showingDiffPicker) {
             DiffPickerView()
@@ -72,14 +78,19 @@ struct ContentView: View {
                 .help("Upload files to multiple devices (Cmd+Shift+M)")
 
                 Button {
-                    showingBackupScheduler = true
+                    if detailMode == .backups {
+                        detailMode = .devices
+                    } else {
+                        favoritesStore.selectedFavorite = nil
+                        detailMode = .backups
+                    }
                 } label: {
                     HStack(spacing: 4) {
-                        Image(systemName: "clock.arrow.circlepath")
+                        Image(systemName: detailMode == .backups ? "clock.arrow.circlepath.fill" : "clock.arrow.circlepath")
                         Text("Backups")
                     }
                 }
-                .help("Schedule config backups from devices")
+                .help("Config backup manager (Cmd+B)")
 
                 Button {
                     showingDiffPicker = true
@@ -92,6 +103,11 @@ struct ContentView: View {
                 .help("Compare two config files side by side")
             }
         }
+        .onChange(of: favoritesStore.selectedFavorite) { _, newValue in
+            if newValue != nil {
+                detailMode = .devices
+            }
+        }
         .onReceive(NotificationCenter.default.publisher(for: .showAddFavorite)) { _ in
             showingAddFavorite = true
         }
@@ -100,6 +116,10 @@ struct ContentView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: .showMultiDestination)) { _ in
             showingMultiDestination = true
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .showBackups)) { _ in
+            favoritesStore.selectedFavorite = nil
+            detailMode = .backups
         }
         .frame(minWidth: 700, minHeight: 450)
     }
