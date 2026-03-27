@@ -5,6 +5,7 @@ import AppKit
 
 struct HighlightedTextView: NSViewRepresentable {
     let attributedString: NSAttributedString
+    let searchText: String
 
     func makeNSView(context: Context) -> NSScrollView {
         let scrollView = NSTextView.scrollableTextView()
@@ -12,8 +13,6 @@ struct HighlightedTextView: NSViewRepresentable {
 
         textView.isEditable = false
         textView.isSelectable = true
-        textView.usesFindBar = true
-        textView.isIncrementalSearchingEnabled = true
         textView.textContainerInset = NSSize(width: 12, height: 8)
         textView.backgroundColor = .textBackgroundColor
         textView.drawsBackground = true
@@ -21,7 +20,6 @@ struct HighlightedTextView: NSViewRepresentable {
         textView.isAutomaticDashSubstitutionEnabled = false
         textView.isAutomaticTextReplacementEnabled = false
 
-        // Enable line wrapping
         textView.textContainer?.widthTracksTextView = true
         textView.isHorizontallyResizable = false
 
@@ -30,11 +28,71 @@ struct HighlightedTextView: NSViewRepresentable {
 
     func updateNSView(_ scrollView: NSScrollView, context: Context) {
         let textView = scrollView.documentView as! NSTextView
-        textView.textStorage?.setAttributedString(attributedString)
+
+        // Apply highlighted text with search highlights
+        let display = NSMutableAttributedString(attributedString: attributedString)
+
+        if !searchText.isEmpty {
+            let fullText = display.string
+            let searchLower = searchText.lowercased()
+            let fullLower = fullText.lowercased()
+            var searchStart = fullLower.startIndex
+
+            while let range = fullLower.range(of: searchLower, range: searchStart..<fullLower.endIndex) {
+                let nsRange = NSRange(range, in: fullText)
+                display.addAttribute(.backgroundColor, value: NSColor.systemYellow.withAlphaComponent(0.4), range: nsRange)
+                searchStart = range.upperBound
+            }
+        }
+
+        textView.textStorage?.setAttributedString(display)
+
+        // Scroll to first match
+        if !searchText.isEmpty {
+            let fullText = display.string.lowercased()
+            if let range = fullText.range(of: searchText.lowercased()) {
+                let nsRange = NSRange(range, in: display.string)
+                textView.scrollRangeToVisible(nsRange)
+            }
+        }
     }
 }
 
-// MARK: - Config Viewer
+// MARK: - Search bar component
+
+struct ConfigSearchBar: View {
+    @Binding var text: String
+    let matchCount: Int
+
+    var body: some View {
+        HStack(spacing: 6) {
+            Image(systemName: "magnifyingglass")
+                .foregroundStyle(.secondary)
+                .font(.caption)
+            TextField("Search config…", text: $text)
+                .textFieldStyle(.plain)
+                .font(.system(.body, design: .default))
+            if !text.isEmpty {
+                Text("\(matchCount) matches")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                Button {
+                    text = ""
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundStyle(.secondary)
+                        .font(.caption)
+                }
+                .buttonStyle(.borderless)
+            }
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .background(.bar)
+    }
+}
+
+// MARK: - Config Viewer (sheet version)
 
 struct ConfigViewerView: View {
     @Environment(\.dismiss) private var dismiss
@@ -43,14 +101,19 @@ struct ConfigViewerView: View {
     let content: String
 
     @State private var highlighted: NSAttributedString?
+    @State private var searchText = ""
 
     private var lineCount: Int {
         content.components(separatedBy: "\n").count
     }
 
+    private var matchCount: Int {
+        guard !searchText.isEmpty else { return 0 }
+        return content.lowercased().components(separatedBy: searchText.lowercased()).count - 1
+    }
+
     var body: some View {
         VStack(spacing: 0) {
-            // Header
             HStack {
                 Image(systemName: "doc.text")
                     .foregroundStyle(.secondary)
@@ -62,10 +125,6 @@ struct ConfigViewerView: View {
 
                 Text("\(lineCount) lines")
                     .font(.caption)
-                    .foregroundStyle(.tertiary)
-
-                Text("Cmd+F to search")
-                    .font(.caption2)
                     .foregroundStyle(.tertiary)
 
                 Button {
@@ -81,11 +140,12 @@ struct ConfigViewerView: View {
             }
             .padding()
 
+            ConfigSearchBar(text: $searchText, matchCount: matchCount)
+
             Divider()
 
-            // Config content
             if let highlighted {
-                HighlightedTextView(attributedString: highlighted)
+                HighlightedTextView(attributedString: highlighted, searchText: searchText)
             } else {
                 ProgressView("Highlighting…")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
