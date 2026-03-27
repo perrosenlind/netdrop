@@ -9,18 +9,22 @@ class BackupScheduler {
     private var timers: [UUID: Timer] = [:]
     private let jobsURL: URL
     private let resultsURL: URL
-    private let backupDir: URL
     private let favoritesStore: FavoritesStore
+    private let settings: AppSettings
 
-    init(favoritesStore: FavoritesStore) {
+    var backupDir: URL {
+        URL(fileURLWithPath: settings.backupDirectory, isDirectory: true)
+    }
+
+    init(favoritesStore: FavoritesStore, settings: AppSettings) {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         let appDir = appSupport.appendingPathComponent("NetDrop", isDirectory: true)
         try? FileManager.default.createDirectory(at: appDir, withIntermediateDirectories: true)
 
         self.jobsURL = appDir.appendingPathComponent("backup_jobs.json")
         self.resultsURL = appDir.appendingPathComponent("backup_results.json")
-        self.backupDir = appDir.appendingPathComponent("backups", isDirectory: true)
         self.favoritesStore = favoritesStore
+        self.settings = settings
 
         try? FileManager.default.createDirectory(at: backupDir, withIntermediateDirectories: true)
 
@@ -78,22 +82,23 @@ class BackupScheduler {
 
     private func executeBackup(_ job: BackupJob) async {
         let favorites = favoritesStore.favorites.filter { job.favorites.contains($0.id) }
+        let useLegacySCP = job.deviceType == .fortigate
 
         for favorite in favorites {
             let timestamp = ISO8601DateFormatter().string(from: Date())
             let safeName = favorite.name.replacingOccurrences(of: "/", with: "_")
-            let fileName = "\(safeName)_\(timestamp).txt"
+            let fileName = "\(safeName)_\(timestamp).conf"
             let filePath = backupDir.appendingPathComponent(fileName)
 
             do {
-                let result = try await SSHService.runCommand(
-                    command: job.remoteCommand,
-                    favorite: favorite
+                let result = try await SCPService.download(
+                    remotePath: job.remotePath,
+                    localPath: filePath.path,
+                    favorite: favorite,
+                    legacySCP: useLegacySCP
                 )
 
                 if result.exitCode == 0 {
-                    try result.output.write(to: filePath, atomically: true, encoding: .utf8)
-
                     let backupResult = BackupResult(
                         jobID: job.id,
                         jobName: job.name,
@@ -207,6 +212,35 @@ class BackupScheduler {
         if let data = try? encoder.encode(results) {
             try? data.write(to: resultsURL, options: .atomic)
         }
+    }
+
+    // MARK: - Restore
+
+    /// Restore a config file to a device via SCP upload.
+    /// For FortiGate: uploads to `fgt-restore-config` which triggers an immediate reboot.
+    func restoreConfig(
+        localPath: String,
+        favorite: Favorite,
+        deviceType: DeviceType
+    ) async throws -> (output: String, exitCode: Int32) {
+        let restorePath: String
+        let useLegacySCP: Bool
+
+        switch deviceType {
+        case .fortigate:
+            restorePath = "fgt-restore-config"
+            useLegacySCP = true
+        case .generic:
+            restorePath = favorite.remotePath
+            useLegacySCP = false
+        }
+
+        return try await SCPService.upload(
+            localPath: localPath,
+            remotePath: restorePath,
+            favorite: favorite,
+            legacySCP: useLegacySCP
+        )
     }
 
     /// Get backup file contents for diff

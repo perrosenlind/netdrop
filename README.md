@@ -22,7 +22,9 @@ A lightweight native macOS app for SCP file transfers, built for network enginee
 - **Keyboard Shortcuts** — Cmd+N (new connection), Cmd+K (quick connect), Cmd+U (upload), Cmd+Shift+M (multi-device), Cmd+, (settings).
 - **Notifications** — macOS notifications on transfer complete or failure with error details.
 - **Dark/Light Mode** — System, Light, or Dark theme via Settings (Cmd+,).
-- **Config Backup Scheduler** — Schedule automatic config pulls from devices on intervals (15min to daily). Run SSH commands, save output with timestamps. View results and status per job.
+- **Config Backup Scheduler** — Schedule automatic config backups via SCP on intervals (15min to daily). FortiGate support with `sys_config` download and legacy SCP protocol (`-O`). Generic device type for custom remote paths. Configurable backup directory in Settings.
+- **Config Restore** — Restore config files to devices via SCP upload. FortiGate restores to `fgt-restore-config` with reboot warning. Right-click any backup result to restore.
+- **Config Viewer** — View backed-up config files with FortiOS syntax highlighting. Color-coded keywords (`config`, `set`, `edit`, `end`), strings, IP addresses, and values. Search within configs. Right-click backup results to view.
 - **Side-by-Side Diff** — Compare two config files with LCS-based diff. Color-coded added/removed/modified lines, line numbers, summary stats. Pick from backup history or browse local files.
 - **Welcome Screen** — Action cards and shortcut reference when no connection is selected.
 
@@ -59,7 +61,7 @@ xcodebuild -project NetDrop.xcodeproj -scheme NetDrop -configuration Debug build
 xcodebuild -project NetDrop.xcodeproj -scheme NetDropTests -configuration Debug test
 ```
 
-82 unit tests covering all models, services, and stores:
+84 unit tests covering all models, services, and stores:
 
 | Suite | Tests | Coverage |
 |---|---|---|
@@ -73,7 +75,7 @@ xcodebuild -project NetDrop.xcodeproj -scheme NetDropTests -configuration Debug 
 | SSHServiceTests | 4 | ls/mkdir/rm/rename with real ssh |
 | TransferTaskTests | 4 | Init, cancel, process attachment, properties |
 | TransferRecordTests | 4 | Defaults, Codable, directions, statuses |
-| BackupJobTests | 4 | Defaults, Codable round-trip, result model, statuses |
+| BackupJobTests | 6 | Defaults, device types (FortiGate/Generic), Codable round-trip, result model, statuses |
 | DiffEngineTests | 9 | Identical, added, removed, modified, empty, summary, large configs |
 
 ## Architecture

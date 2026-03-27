@@ -17,7 +17,7 @@ struct NetDropApp: App {
                 .preferredColorScheme(appSettings.preferredColorScheme)
                 .onAppear {
                     if backupScheduler == nil {
-                        backupScheduler = BackupScheduler(favoritesStore: favoritesStore)
+                        backupScheduler = BackupScheduler(favoritesStore: favoritesStore, settings: appSettings)
                     }
                 }
         }

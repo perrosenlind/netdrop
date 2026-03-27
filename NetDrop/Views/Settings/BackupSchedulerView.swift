@@ -1,5 +1,11 @@
 import SwiftUI
 
+struct ConfigViewerItem: Identifiable {
+    let id = UUID()
+    let title: String
+    let content: String
+}
+
 struct BackupSchedulerView: View {
     @Environment(BackupScheduler.self) private var scheduler
     @Environment(FavoritesStore.self) private var favoritesStore
@@ -7,6 +13,10 @@ struct BackupSchedulerView: View {
 
     @State private var showingAddJob = false
     @State private var editingJob: BackupJob?
+    @State private var restoreResult: BackupResult?
+    @State private var showingRestoreConfirm = false
+    @State private var restoreStatus: String?
+    @State private var viewingConfig: ConfigViewerItem?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -59,11 +69,60 @@ struct BackupSchedulerView: View {
                         Section("Recent Results") {
                             ForEach(scheduler.results.prefix(20)) { result in
                                 BackupResultRow(result: result)
+                                    .contextMenu {
+                                        if result.status == .success, let path = result.filePath {
+                                            Button("View Config") {
+                                                if let content = try? String(contentsOfFile: path, encoding: .utf8) {
+                                                    viewingConfig = ConfigViewerItem(
+                                                        title: "\(result.favoriteName) — \(result.timestamp.formatted())",
+                                                        content: content
+                                                    )
+                                                }
+                                            }
+                                            Button("Show in Finder") {
+                                                NSWorkspace.shared.selectFile(path, inFileViewerRootedAtPath: "")
+                                            }
+                                            Divider()
+                                            Button("Restore to Device…") {
+                                                restoreResult = result
+                                                showingRestoreConfirm = true
+                                            }
+                                        }
+                                    }
                             }
                         }
                     }
                 }
                 .listStyle(.inset)
+            }
+
+            if let restoreStatus {
+                HStack {
+                    Image(systemName: restoreStatus.starts(with: "Error") ? "xmark.circle.fill" : "checkmark.circle.fill")
+                        .foregroundColor(restoreStatus.starts(with: "Error") ? .red : .green)
+                    Text(restoreStatus)
+                        .font(.caption)
+                    Spacer()
+                    Button("Dismiss") { self.restoreStatus = nil }
+                        .controlSize(.small)
+                }
+                .padding(.horizontal)
+                .padding(.vertical, 6)
+                .background(.bar)
+            }
+        }
+        .alert("Restore Config", isPresented: $showingRestoreConfirm) {
+            Button("Cancel", role: .cancel) { }
+            Button("Restore", role: .destructive) {
+                performRestore()
+            }
+        } message: {
+            if let result = restoreResult {
+                let job = scheduler.jobs.first(where: { $0.id == result.jobID })
+                let isFortigate = job?.deviceType == .fortigate
+                Text(isFortigate
+                    ? "This will upload the config to \(result.favoriteName) (\(result.host)). The FortiGate will reboot immediately after upload. Continue?"
+                    : "This will upload the config to \(result.favoriteName) (\(result.host)). Continue?")
             }
         }
         .sheet(isPresented: $showingAddJob) {
@@ -71,6 +130,48 @@ struct BackupSchedulerView: View {
         }
         .sheet(item: $editingJob) { job in
             BackupJobEditView(mode: .edit(job))
+        }
+        .sheet(item: $viewingConfig) { item in
+            ConfigViewerView(title: item.title, content: item.content)
+        }
+    }
+
+    private func performRestore() {
+        guard let result = restoreResult,
+              let filePath = result.filePath,
+              let favorite = favoritesStore.favorites.first(where: { $0.id == result.favoriteID }) else {
+            restoreStatus = "Error: could not find device or backup file"
+            return
+        }
+
+        let job = scheduler.jobs.first(where: { $0.id == result.jobID })
+        let deviceType = job?.deviceType ?? .generic
+
+        restoreStatus = "Restoring to \(favorite.name)…"
+
+        Task {
+            do {
+                let scpResult = try await scheduler.restoreConfig(
+                    localPath: filePath,
+                    favorite: favorite,
+                    deviceType: deviceType
+                )
+
+                await MainActor.run {
+                    if scpResult.exitCode == 0 {
+                        let msg = deviceType == .fortigate
+                            ? "Config restored to \(favorite.name). Device is rebooting."
+                            : "Config restored to \(favorite.name)."
+                        restoreStatus = msg
+                    } else {
+                        restoreStatus = "Error: \(ConnectionTester.friendlyError(from: scpResult.output, authMethod: favorite.authMethod))"
+                    }
+                }
+            } catch {
+                await MainActor.run {
+                    restoreStatus = "Error: \(error.localizedDescription)"
+                }
+            }
         }
     }
 }
@@ -101,7 +202,7 @@ struct BackupJobRow: View {
                             .controlSize(.mini)
                     }
                 }
-                Text("\(job.favorites.count) device(s) · every \(job.intervalMinutes) min")
+                Text("\(job.favorites.count) device(s) · \(job.deviceType.rawValue) · every \(job.intervalMinutes) min")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 if let lastRun = job.lastRun {
@@ -192,7 +293,8 @@ struct BackupJobEditView: View {
     let mode: BackupJobEditMode
 
     @State private var name = ""
-    @State private var command = "show full-configuration"
+    @State private var remotePath = "sys_config"
+    @State private var deviceType: DeviceType = .fortigate
     @State private var intervalMinutes = 60
     @State private var selectedFavoriteIDs: Set<UUID> = []
 
@@ -206,8 +308,21 @@ struct BackupJobEditView: View {
             Form {
                 Section("Job") {
                     TextField("Name", text: $name)
-                    TextField("Remote command", text: $command)
+                    Picker("Device type", selection: $deviceType) {
+                        ForEach(DeviceType.allCases, id: \.self) { type in
+                            Text(type.rawValue).tag(type)
+                        }
+                    }
+                    .onChange(of: deviceType) { _, newType in
+                        remotePath = newType.defaultRemotePath
+                    }
+                    TextField("Remote path (SCP)", text: $remotePath)
                         .font(.system(.body, design: .monospaced))
+                    if deviceType == .fortigate {
+                        Text("FortiGate: downloads sys_config via SCP with legacy protocol (-O)")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
                     Picker("Interval", selection: $intervalMinutes) {
                         Text("Every 15 min").tag(15)
                         Text("Every 30 min").tag(30)
@@ -255,7 +370,8 @@ struct BackupJobEditView: View {
         .onAppear {
             if case .edit(let job) = mode {
                 name = job.name
-                command = job.remoteCommand
+                remotePath = job.remotePath
+                deviceType = job.deviceType
                 intervalMinutes = job.intervalMinutes
                 selectedFavoriteIDs = Set(job.favorites)
             }
@@ -270,7 +386,8 @@ struct BackupJobEditView: View {
             job = BackupJob()
         }
         job.name = name
-        job.remoteCommand = command
+        job.remotePath = remotePath
+        job.deviceType = deviceType
         job.intervalMinutes = intervalMinutes
         job.favorites = Array(selectedFavoriteIDs)
 

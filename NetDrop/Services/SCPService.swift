@@ -8,10 +8,11 @@ struct SCPService {
         remotePath: String,
         favorite: Favorite,
         password: String? = nil,
+        legacySCP: Bool = false,
         onProgress: (@Sendable (String) -> Void)? = nil
     ) async throws -> (output: String, exitCode: Int32) {
         let remoteTarget = "\(favorite.username)@\(favorite.host):\(remotePath)"
-        var args = buildBaseArgs(favorite: favorite)
+        var args = buildBaseArgs(favorite: favorite, legacySCP: legacySCP)
         args.append(localPath)
         args.append(remoteTarget)
 
@@ -24,10 +25,11 @@ struct SCPService {
         localPath: String,
         favorite: Favorite,
         password: String? = nil,
+        legacySCP: Bool = false,
         onProgress: (@Sendable (String) -> Void)? = nil
     ) async throws -> (output: String, exitCode: Int32) {
         let remoteTarget = "\(favorite.username)@\(favorite.host):\(remotePath)"
-        var args = buildBaseArgs(favorite: favorite)
+        var args = buildBaseArgs(favorite: favorite, legacySCP: legacySCP)
         args.append(remoteTarget)
         args.append(localPath)
 
@@ -35,8 +37,13 @@ struct SCPService {
         return try await runSCP(args: args, password: pw, favorite: favorite, onProgress: onProgress)
     }
 
-    private static func buildBaseArgs(favorite: Favorite) -> [String] {
+    private static func buildBaseArgs(favorite: Favorite, legacySCP: Bool = false) -> [String] {
         var args: [String] = []
+
+        // Force legacy SCP protocol (required for FortiGate, OpenSSH 9.0+)
+        if legacySCP {
+            args.append("-O")
+        }
 
         if favorite.port != 22 {
             args.append(contentsOf: ["-P", "\(favorite.port)"])

@@ -5,7 +5,8 @@ final class BackupJobTests: XCTestCase {
 
     func testDefaultValues() {
         let job = BackupJob()
-        XCTAssertEqual(job.remoteCommand, "show full-configuration")
+        XCTAssertEqual(job.remotePath, "sys_config")
+        XCTAssertEqual(job.deviceType, .fortigate)
         XCTAssertEqual(job.intervalMinutes, 60)
         XCTAssertTrue(job.isEnabled)
         XCTAssertNil(job.lastRun)
@@ -17,7 +18,8 @@ final class BackupJobTests: XCTestCase {
         var job = BackupJob(
             name: "Daily Backup",
             favorites: [UUID(), UUID()],
-            remoteCommand: "cat /etc/config",
+            remotePath: "/etc/config",
+            deviceType: .generic,
             intervalMinutes: 360,
             isEnabled: false
         )
@@ -29,11 +31,24 @@ final class BackupJobTests: XCTestCase {
 
         XCTAssertEqual(decoded.name, "Daily Backup")
         XCTAssertEqual(decoded.favorites.count, 2)
-        XCTAssertEqual(decoded.remoteCommand, "cat /etc/config")
+        XCTAssertEqual(decoded.remotePath, "/etc/config")
+        XCTAssertEqual(decoded.deviceType, .generic)
         XCTAssertEqual(decoded.intervalMinutes, 360)
         XCTAssertFalse(decoded.isEnabled)
         XCTAssertNotNil(decoded.lastRun)
         XCTAssertEqual(decoded.lastStatus, .success)
+    }
+
+    func testFortiGateDeviceType() {
+        let job = BackupJob(deviceType: .fortigate)
+        XCTAssertEqual(job.remotePath, "sys_config")
+        XCTAssertEqual(job.deviceType.defaultRemotePath, "sys_config")
+    }
+
+    func testGenericDeviceType() {
+        let job = BackupJob(remotePath: "/etc/network/config", deviceType: .generic)
+        XCTAssertEqual(job.remotePath, "/etc/network/config")
+        XCTAssertEqual(job.deviceType.defaultRemotePath, "/etc/config")
     }
 
     func testBackupResultCodable() throws {

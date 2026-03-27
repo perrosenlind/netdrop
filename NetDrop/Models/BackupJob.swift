@@ -1,27 +1,49 @@
 import Foundation
 
+enum DeviceType: String, Codable, CaseIterable {
+    case fortigate = "FortiGate"
+    case generic = "Generic (SCP path)"
+
+    /// Default remote path for config backup via SCP
+    var defaultRemotePath: String {
+        switch self {
+        case .fortigate: return "sys_config"
+        case .generic: return "/etc/config"
+        }
+    }
+}
+
 struct BackupJob: Identifiable, Codable {
     var id: UUID
     var name: String
     var favorites: [UUID]  // IDs of favorites to back up
-    var remoteCommand: String  // Command to run (e.g. "cat /etc/config" or path to download)
+    var remotePath: String  // Remote file path to download via SCP
+    var deviceType: DeviceType
     var intervalMinutes: Int
     var isEnabled: Bool
     var lastRun: Date?
     var lastStatus: BackupStatus?
 
+    // Legacy support
+    var remoteCommand: String {
+        get { remotePath }
+        set { remotePath = newValue }
+    }
+
     init(
         id: UUID = UUID(),
         name: String = "",
         favorites: [UUID] = [],
-        remoteCommand: String = "show full-configuration",
+        remotePath: String = "sys_config",
+        deviceType: DeviceType = .fortigate,
         intervalMinutes: Int = 60,
         isEnabled: Bool = true
     ) {
         self.id = id
         self.name = name
         self.favorites = favorites
-        self.remoteCommand = remoteCommand
+        self.remotePath = remotePath
+        self.deviceType = deviceType
         self.intervalMinutes = intervalMinutes
         self.isEnabled = isEnabled
     }

@@ -6,6 +6,10 @@ class AppSettings {
         didSet { save() }
     }
 
+    var backupDirectory: String {
+        didSet { save() }
+    }
+
     var preferredColorScheme: ColorScheme? {
         switch appearanceMode {
         case .system: return nil
@@ -14,15 +18,20 @@ class AppSettings {
         }
     }
 
-    private let key = "appearanceMode"
+    static var defaultBackupDirectory: String {
+        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        return appSupport.appendingPathComponent("NetDrop/backups", isDirectory: true).path
+    }
 
     init() {
         let raw = UserDefaults.standard.string(forKey: "appearanceMode") ?? "system"
         self.appearanceMode = AppearanceMode(rawValue: raw) ?? .system
+        self.backupDirectory = UserDefaults.standard.string(forKey: "backupDirectory") ?? AppSettings.defaultBackupDirectory
     }
 
     private func save() {
-        UserDefaults.standard.set(appearanceMode.rawValue, forKey: key)
+        UserDefaults.standard.set(appearanceMode.rawValue, forKey: "appearanceMode")
+        UserDefaults.standard.set(backupDirectory, forKey: "backupDirectory")
     }
 }
 
