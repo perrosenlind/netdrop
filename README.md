@@ -6,9 +6,9 @@ A lightweight native macOS app for SCP file transfers, built for network enginee
 
 ## Features
 
-- **Password & Key Authentication** — Connect with username/password (via `sshpass`), SSH key, or SSH agent. Passwords stored securely in macOS Keychain.
-- **Connection Favorites** — Save device profiles with host, port, username, auth method, and group. Persisted locally as JSON.
-- **Quick Connect** — Connect to any device on the fly (Cmd+K) with username and password. Optionally save as a favorite.
+- **Password & Key Authentication** — Connect with username/password (via `sshpass`), SSH key, or SSH agent. Passwords stored securely in macOS Keychain with automatic prompt if missing.
+- **Connection Favorites** — Save device profiles with host, port, username, auth method. Organize into collapsible folders. Duplicate IPs allowed across folders for overlapping environments. Double-click to connect.
+- **Quick Connect** — Connect to any device on the fly (Cmd+K) with username and password. Save as a favorite after connecting.
 - **Multi-File Upload** — Select multiple files or drag-and-drop them onto the app to queue transfers.
 - **Multi-Destination Upload** — Push the same file(s) to multiple devices at once (Cmd+Shift+M). Import a list of IPs from a text/CSV file with shared credentials, or select from your favorites.
 - **Remote File Browser** — Browse remote directories via SSH. Navigate folders, download files, delete with context menu.
@@ -17,7 +17,7 @@ A lightweight native macOS app for SCP file transfers, built for network enginee
 - **Transfer Progress** — Live SCP progress output streamed to the transfer queue as files move.
 - **Transfer Log** — History of all transfers with search and status filtering (All/Completed/Failed).
 - **SSH Key Picker** — Browse for key files, per-connection assignment, SSH agent integration.
-- **Favorite Groups** — Organize connections into groups with quick-assign buttons.
+- **Sidebar Folders** — Create, rename, and delete folders in the sidebar. Move favorites between folders via context menu. Collapsible with device count.
 - **Menubar Quick-Upload** — Drop files onto the menubar icon to upload without opening the main window.
 - **Keyboard Shortcuts** — Cmd+N (new connection), Cmd+K (quick connect), Cmd+U (upload), Cmd+Shift+M (multi-device), Cmd+, (settings).
 - **Notifications** — macOS notifications on transfer complete or failure with error details.
@@ -59,15 +59,15 @@ xcodebuild -project NetDrop.xcodeproj -scheme NetDrop -configuration Debug build
 xcodebuild -project NetDrop.xcodeproj -scheme NetDropTests -configuration Debug test
 ```
 
-78 unit tests covering all models, services, and stores:
+82 unit tests covering all models, services, and stores:
 
 | Suite | Tests | Coverage |
 |---|---|---|
 | IPListParserTests | 15 | All parsing formats, comments, dedup, edge cases |
 | RemoteFileEntryTests | 10 | Icons for every file type, formatted sizes |
-| FavoritesStoreTests | 7 | Full CRUD, groups, selection clearing |
+| FavoritesStoreTests | 11 | Full CRUD, groups, folder create/rename/delete, duplicate IPs, selection clearing |
 | TransferManagerTests | 7 | Single/multi upload, multi-dest, cancel, clear |
-| FavoriteModelTests | 5 | Defaults, Codable for all auth types, equality |
+| FavoriteModelTests | 5 | Defaults (password auth), Codable for all auth types, equality |
 | AppSettingsTests | 5 | All appearance modes, persistence |
 | SCPServiceTests | 5 | Upload/download with real scp, progress, auth |
 | SSHServiceTests | 4 | ls/mkdir/rm/rename with real ssh |

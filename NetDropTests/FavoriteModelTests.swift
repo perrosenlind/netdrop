@@ -9,6 +9,7 @@ final class FavoriteModelTests: XCTestCase {
         let fav = Favorite()
         XCTAssertEqual(fav.port, 22)
         XCTAssertEqual(fav.username, "admin")
+        XCTAssertEqual(fav.authMethod, .password)
         XCTAssertEqual(fav.remotePath, "/")
         XCTAssertEqual(fav.group, "")
     }

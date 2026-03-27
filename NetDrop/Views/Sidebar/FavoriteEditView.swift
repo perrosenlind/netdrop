@@ -22,7 +22,7 @@ struct FavoriteEditView: View {
     @State private var host: String = ""
     @State private var port: String = "22"
     @State private var username: String = "admin"
-    @State private var authType: AuthType = .key
+    @State private var authType: AuthType = .password
     @State private var keyPath: String = "~/.ssh/id_rsa"
     @State private var passwordField: String = ""
     @State private var showKeyPicker = false
@@ -84,7 +84,7 @@ struct FavoriteEditView: View {
 
                 Section("Options") {
                     TextField("Remote Path", text: $remotePath)
-                    TextField("Group", text: $group, prompt: Text("Optional"))
+                    TextField("Folder", text: $group, prompt: Text("Optional"))
                     if !favoritesStore.groups.isEmpty {
                         HStack(spacing: 6) {
                             ForEach(favoritesStore.groups, id: \.self) { g in

@@ -3,6 +3,7 @@ import SwiftUI
 struct BackupSchedulerView: View {
     @Environment(BackupScheduler.self) private var scheduler
     @Environment(FavoritesStore.self) private var favoritesStore
+    @Environment(\.dismiss) private var dismiss
 
     @State private var showingAddJob = false
     @State private var editingJob: BackupJob?
@@ -18,6 +19,16 @@ struct BackupSchedulerView: View {
                 } label: {
                     Label("Add Job", systemImage: "plus")
                 }
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundStyle(.secondary)
+                        .font(.title3)
+                }
+                .buttonStyle(.borderless)
+                .help("Close")
+                .keyboardShortcut(.cancelAction)
             }
             .padding()
 

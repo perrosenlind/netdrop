@@ -109,4 +109,59 @@ final class FavoritesStoreTests: XCTestCase {
         store.delete(fav1)
         store.delete(fav2)
     }
+
+    // MARK: - Group Management
+
+    func testAddEmptyGroup() {
+        let store = FavoritesStore()
+        store.addGroup("TestFolder")
+
+        XCTAssertTrue(store.groups.contains("TestFolder"))
+
+        // Cleanup
+        store.deleteGroup("TestFolder")
+    }
+
+    func testRenameGroup() {
+        let store = FavoritesStore()
+        let fav = Favorite(name: "A", host: "1.1.1.1", username: "admin", group: "OldName")
+        store.add(fav)
+
+        store.renameGroup(from: "OldName", to: "NewName")
+
+        XCTAssertTrue(store.groups.contains("NewName"))
+        XCTAssertFalse(store.groups.contains("OldName"))
+        XCTAssertEqual(store.favorites(inGroup: "NewName").count, 1)
+
+        store.delete(fav)
+    }
+
+    func testDeleteGroupMovesFavoritesToUngrouped() {
+        let store = FavoritesStore()
+        let fav = Favorite(name: "A", host: "1.1.1.1", username: "admin", group: "ToDelete")
+        store.add(fav)
+
+        store.deleteGroup("ToDelete")
+
+        XCTAssertFalse(store.groups.contains("ToDelete"))
+        let updated = store.favorites.first(where: { $0.id == fav.id })
+        XCTAssertEqual(updated?.group, "")
+
+        store.delete(fav)
+    }
+
+    func testDuplicateIPsAllowed() {
+        let store = FavoritesStore()
+        let fav1 = Favorite(name: "Lab-FW", host: "10.0.0.1", username: "admin", group: "Lab")
+        let fav2 = Favorite(name: "Prod-FW", host: "10.0.0.1", username: "admin", group: "Prod")
+        store.add(fav1)
+        store.add(fav2)
+
+        let matching = store.favorites.filter { $0.host == "10.0.0.1" }
+        XCTAssertGreaterThanOrEqual(matching.count, 2)
+        XCTAssertNotEqual(fav1.id, fav2.id)
+
+        store.delete(fav1)
+        store.delete(fav2)
+    }
 }

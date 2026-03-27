@@ -13,6 +13,11 @@ struct TransferView: View {
     @State private var showBrowser = false
     @State private var connectionStatus: ConnectionStatus = .testing
     @State private var reconnectTimer: Timer?
+    @State private var showingPasswordPrompt = false
+    @State private var passwordField: String = ""
+    @State private var showingSavePrompt = false
+    @State private var saveName: String = ""
+    @State private var saveGroup: String = ""
 
     var body: some View {
         VStack(spacing: 0) {
@@ -62,6 +67,16 @@ struct TransferView: View {
                     .controlSize(.small)
                 }
 
+                if !favoritesStore.favorites.contains(where: { $0.id == favorite.id }) {
+                    Button {
+                        saveName = favorite.name
+                        showingSavePrompt = true
+                    } label: {
+                        Label("Save", systemImage: "star")
+                    }
+                    .controlSize(.small)
+                }
+
                 Picker("", selection: $showBrowser) {
                     Label("Transfer", systemImage: "arrow.up.arrow.down").tag(false)
                     Label("Browse", systemImage: "folder").tag(true)
@@ -72,12 +87,14 @@ struct TransferView: View {
                 Button {
                     favoritesStore.selectedFavorite = nil
                 } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundStyle(.secondary)
-                        .font(.title3)
+                    HStack(spacing: 4) {
+                        Image(systemName: "xmark.circle.fill")
+                        Text("Disconnect")
+                    }
+                    .foregroundStyle(.red)
                 }
                 .buttonStyle(.borderless)
-                .help("Close connection")
+                .help("Disconnect (Cmd+W)")
             }
             .padding()
 
@@ -117,6 +134,32 @@ struct TransferView: View {
         .onChange(of: favorite) { _, _ in
             testConnection()
         }
+        .sheet(isPresented: $showingPasswordPrompt) {
+            PasswordPromptView(
+                favoriteName: favorite.name,
+                password: $passwordField
+            ) {
+                // Save to Keychain and retry
+                KeychainService.savePassword(passwordField, for: favorite.id)
+                passwordField = ""
+                testConnection()
+            } onCancel: {
+                passwordField = ""
+            }
+        }
+        .sheet(isPresented: $showingSavePrompt) {
+            SaveFavoriteView(
+                favorite: favorite,
+                name: $saveName,
+                group: $saveGroup
+            ) {
+                var fav = favorite
+                fav.name = saveName.isEmpty ? favorite.host : saveName
+                fav.group = saveGroup
+                favoritesStore.add(fav)
+                favoritesStore.selectedFavorite = fav
+            }
+        }
     }
 
     @ViewBuilder
@@ -155,6 +198,13 @@ struct TransferView: View {
             let result = await ConnectionTester.test(favorite: favorite)
             await MainActor.run {
                 connectionStatus = result
+                // If password auth failed and Keychain is empty, prompt for password
+                if case .failed(let msg) = result,
+                   case .password = favorite.authMethod,
+                   msg.lowercased().contains("permission denied"),
+                   favorite.password == nil || favorite.password?.isEmpty == true {
+                    showingPasswordPrompt = true
+                }
             }
         }
     }

@@ -16,7 +16,7 @@ struct Favorite: Identifiable, Codable, Hashable {
         host: String = "",
         port: Int = 22,
         username: String = "admin",
-        authMethod: AuthMethod = .key(path: "~/.ssh/id_rsa"),
+        authMethod: AuthMethod = .password,
         remotePath: String = "/",
         group: String = ""
     ) {

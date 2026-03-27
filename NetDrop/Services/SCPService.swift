@@ -48,6 +48,14 @@ struct SCPService {
         }
 
         args.append(contentsOf: ["-o", "StrictHostKeyChecking=no"])
+        args.append(contentsOf: ["-o", "ConnectTimeout=10"])
+
+        // Prevent hanging on password prompt for key/agent auth
+        if case .password = favorite.authMethod {
+            // no BatchMode for password
+        } else {
+            args.append(contentsOf: ["-o", "BatchMode=yes"])
+        }
 
         return args
     }

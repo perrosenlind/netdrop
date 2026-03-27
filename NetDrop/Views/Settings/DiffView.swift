@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct DiffView: View {
+    @Environment(\.dismiss) private var dismiss
+
     let leftTitle: String
     let rightTitle: String
     let leftContent: String
@@ -35,6 +37,17 @@ struct DiffView: View {
                 Toggle("Show unchanged", isOn: $showUnchanged)
                     .toggleStyle(.checkbox)
                     .controlSize(.small)
+
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundStyle(.secondary)
+                        .font(.title3)
+                }
+                .buttonStyle(.borderless)
+                .help("Close")
+                .keyboardShortcut(.cancelAction)
             }
             .padding()
 
