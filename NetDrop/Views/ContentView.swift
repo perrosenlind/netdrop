@@ -77,6 +77,18 @@ struct ContentView: View {
                 }
                 .help("Upload files to multiple devices (Cmd+Shift+M)")
 
+                if detailMode == .backups {
+                    Button {
+                        detailMode = .devices
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: "chevron.left")
+                            Text("Back")
+                        }
+                    }
+                    .help("Return to connections")
+                }
+
                 Button {
                     if detailMode == .backups {
                         detailMode = .devices
@@ -86,11 +98,16 @@ struct ContentView: View {
                     }
                 } label: {
                     HStack(spacing: 4) {
-                        Image(systemName: detailMode == .backups ? "clock.arrow.circlepath.fill" : "clock.arrow.circlepath")
+                        Image(systemName: "clock.arrow.circlepath")
                         Text("Backups")
                     }
                 }
                 .help("Config backup manager (Cmd+B)")
+                .background(
+                    detailMode == .backups
+                        ? RoundedRectangle(cornerRadius: 6).fill(Color.accentColor.opacity(0.2))
+                        : nil
+                )
 
                 Button {
                     showingDiffPicker = true

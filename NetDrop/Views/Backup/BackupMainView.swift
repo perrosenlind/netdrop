@@ -26,13 +26,16 @@ struct BackupMainView: View {
     @State private var adHocRunning = false
 
     var body: some View {
-        HSplitView {
+        HStack(spacing: 0) {
             backupSidebar
-                .frame(minWidth: 220, idealWidth: 260, maxWidth: 350)
+                .frame(width: 260)
+
+            Divider()
 
             backupDetail
-                .frame(minWidth: 400)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onAppear { refreshFiles() }
     }
 
@@ -40,38 +43,17 @@ struct BackupMainView: View {
 
     private var backupSidebar: some View {
         VStack(spacing: 0) {
-            // Header
-            HStack {
-                Text("Backups")
-                    .font(.headline)
-                Spacer()
-                Menu {
-                    Button("New Job…") { selection = .addJob }
-                    Button("Refresh") { refreshFiles() }
-                    Button("Open in Finder") {
-                        NSWorkspace.shared.open(scheduler.backupDir)
-                    }
-                } label: {
-                    Image(systemName: "ellipsis.circle")
-                }
-                .buttonStyle(.borderless)
-            }
-            .padding(.horizontal)
-            .padding(.vertical, 8)
-
-            Divider()
-
-            // Ad-hoc backup section
+            // Ad-hoc backup
             adHocBackupSection
 
             Divider()
 
-            // Jobs section
+            // Jobs
             jobsSection
 
             Divider()
 
-            // Files section
+            // Files
             filesBrowser
         }
         .background(.bar)
@@ -79,9 +61,8 @@ struct BackupMainView: View {
 
     private var adHocBackupSection: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text("Quick Backup")
-                .font(.caption)
-                .fontWeight(.semibold)
+            Text("QUICK BACKUP")
+                .font(.system(size: 10, weight: .semibold))
                 .foregroundStyle(.secondary)
 
             Picker("Device", selection: $adHocFavorite) {
@@ -91,6 +72,7 @@ struct BackupMainView: View {
                 }
             }
             .controlSize(.small)
+            .labelsHidden()
 
             HStack(spacing: 4) {
                 Picker("", selection: $adHocDeviceType) {
@@ -99,7 +81,8 @@ struct BackupMainView: View {
                     }
                 }
                 .controlSize(.small)
-                .frame(maxWidth: 120)
+                .labelsHidden()
+                .frame(maxWidth: 110)
                 .onChange(of: adHocDeviceType) { _, t in
                     adHocRemotePath = t.defaultRemotePath
                 }
@@ -125,40 +108,38 @@ struct BackupMainView: View {
             .buttonStyle(.borderedProminent)
             .disabled(adHocFavorite == nil || adHocRunning)
         }
-        .padding(.horizontal)
-        .padding(.vertical, 8)
+        .padding(10)
     }
 
     private var jobsSection: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
-                Text("Scheduled Jobs")
-                    .font(.caption)
-                    .fontWeight(.semibold)
+                Text("SCHEDULED JOBS")
+                    .font(.system(size: 10, weight: .semibold))
                     .foregroundStyle(.secondary)
                 Spacer()
                 Button { selection = .addJob } label: {
-                    Image(systemName: "plus")
-                        .font(.caption)
+                    Image(systemName: "plus").font(.caption)
                 }
                 .buttonStyle(.borderless)
             }
-            .padding(.horizontal)
-            .padding(.vertical, 6)
+            .padding(.horizontal, 10)
+            .padding(.top, 8)
+            .padding(.bottom, 4)
 
             if scheduler.jobs.isEmpty {
                 Text("No scheduled jobs")
                     .font(.caption)
                     .foregroundStyle(.tertiary)
-                    .padding(.horizontal)
-                    .padding(.bottom, 6)
+                    .padding(.horizontal, 10)
+                    .padding(.bottom, 8)
             } else {
                 ForEach(scheduler.jobs) { job in
                     HStack(spacing: 6) {
                         Image(systemName: job.isEnabled ? "clock.fill" : "clock")
                             .foregroundColor(job.isEnabled ? .green : .secondary)
-                            .font(.caption)
-                        VStack(alignment: .leading, spacing: 1) {
+                            .font(.caption2)
+                        VStack(alignment: .leading, spacing: 0) {
                             Text(job.name).font(.caption).fontWeight(.medium)
                             Text("\(job.deviceType.rawValue) · \(job.intervalMinutes)min")
                                 .font(.caption2)
@@ -168,20 +149,21 @@ struct BackupMainView: View {
                         if scheduler.runningJobIDs.contains(job.id) {
                             ProgressView().controlSize(.mini)
                         }
-                        Button("Run") { scheduler.runNow(job) }
+                        Button("Run") { scheduler.runNow(job); refreshAfterDelay() }
                             .controlSize(.mini)
                             .disabled(scheduler.runningJobIDs.contains(job.id))
                     }
-                    .padding(.horizontal)
+                    .padding(.horizontal, 10)
                     .padding(.vertical, 3)
                     .contextMenu {
                         Button("Edit…") { editingJob = job }
-                        Button("Run Now") { scheduler.runNow(job) }
+                        Button("Run Now") { scheduler.runNow(job); refreshAfterDelay() }
                         Button(job.isEnabled ? "Disable" : "Enable") { scheduler.toggleJob(job) }
                         Divider()
                         Button("Delete", role: .destructive) { scheduler.deleteJob(job) }
                     }
                 }
+                .padding(.bottom, 4)
             }
         }
     }
@@ -189,58 +171,76 @@ struct BackupMainView: View {
     private var filesBrowser: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
-                Text("Config Files")
-                    .font(.caption)
-                    .fontWeight(.semibold)
+                Text("CONFIG FILES")
+                    .font(.system(size: 10, weight: .semibold))
                     .foregroundStyle(.secondary)
                 Spacer()
-                Text("\(groupedFiles.values.flatMap { $0 }.count) files")
+                Text("\(groupedFiles.values.flatMap { $0 }.count)")
                     .font(.caption2)
                     .foregroundStyle(.tertiary)
+                Button {
+                    NSWorkspace.shared.open(scheduler.backupDir)
+                } label: {
+                    Image(systemName: "folder").font(.caption2)
+                }
+                .buttonStyle(.borderless)
+                .help("Open backup folder in Finder")
             }
-            .padding(.horizontal)
-            .padding(.vertical, 6)
+            .padding(.horizontal, 10)
+            .padding(.top, 8)
+            .padding(.bottom, 4)
 
-            List(selection: Binding<BackupSelection?>(
-                get: { selection },
-                set: { selection = $0 }
-            )) {
+            List {
                 if groupedFiles.isEmpty {
                     Text("No backups yet")
                         .font(.caption)
                         .foregroundStyle(.tertiary)
+                        .listRowBackground(Color.clear)
                 } else {
                     ForEach(groupedFiles.keys.sorted(), id: \.self) { device in
                         Section(device) {
                             ForEach(groupedFiles[device] ?? []) { file in
-                                HStack {
-                                    Image(systemName: "doc.text")
-                                        .foregroundStyle(.secondary)
-                                        .font(.caption)
-                                    VStack(alignment: .leading, spacing: 1) {
-                                        Text(file.formattedDate)
-                                            .font(.caption)
-                                        Text(file.formattedSize)
-                                            .font(.caption2)
-                                            .foregroundStyle(.tertiary)
-                                    }
-                                }
-                                .tag(BackupSelection.file(file))
-                                .contextMenu {
-                                    Button("Show in Finder") {
-                                        NSWorkspace.shared.selectFile(file.filePath, inFileViewerRootedAtPath: "")
-                                    }
-                                    Button("Delete", role: .destructive) {
-                                        try? FileManager.default.removeItem(atPath: file.filePath)
-                                        refreshFiles()
-                                    }
-                                }
+                                fileRow(file)
                             }
                         }
                     }
                 }
             }
             .listStyle(.sidebar)
+        }
+    }
+
+    private func fileRow(_ file: BackupFileItem) -> some View {
+        HStack(spacing: 6) {
+            Image(systemName: "doc.text")
+                .foregroundStyle(.secondary)
+                .font(.caption2)
+            VStack(alignment: .leading, spacing: 0) {
+                Text(file.formattedDate)
+                    .font(.caption)
+                Text(file.formattedSize)
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(Rectangle())
+        .listRowBackground(
+            selection == .file(file) ? Color.accentColor.opacity(0.25) : Color.clear
+        )
+        .onTapGesture { selection = .file(file) }
+        .contextMenu {
+            Button("View") { selection = .file(file) }
+            Button("Show in Finder") {
+                NSWorkspace.shared.selectFile(file.filePath, inFileViewerRootedAtPath: "")
+            }
+            Button("Restore to Device…") { restoreFile(file) }
+            Divider()
+            Button("Delete", role: .destructive) {
+                try? FileManager.default.removeItem(atPath: file.filePath)
+                refreshFiles()
+                if selection == .file(file) { selection = nil }
+            }
         }
     }
 
@@ -253,11 +253,9 @@ struct BackupMainView: View {
                 HStack {
                     Image(systemName: statusMessage.starts(with: "Error") ? "xmark.circle.fill" : "checkmark.circle.fill")
                         .foregroundColor(statusMessage.starts(with: "Error") ? .red : .green)
-                    Text(statusMessage)
-                        .font(.caption)
+                    Text(statusMessage).font(.caption)
                     Spacer()
-                    Button("Dismiss") { self.statusMessage = nil }
-                        .controlSize(.mini)
+                    Button("Dismiss") { self.statusMessage = nil }.controlSize(.mini)
                 }
                 .padding(.horizontal)
                 .padding(.vertical, 4)
@@ -273,9 +271,7 @@ struct BackupMainView: View {
                     onRefresh: { refreshFiles() }
                 )
             case .addJob:
-                BackupJobInlineEditView(mode: .add) {
-                    selection = nil
-                }
+                BackupJobInlineEditView(mode: .add) { selection = nil }
             case nil:
                 ContentUnavailableView(
                     "Select a Backup",
@@ -284,6 +280,7 @@ struct BackupMainView: View {
                 )
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .sheet(item: $editingJob) { job in
             BackupJobEditView(mode: .edit(job))
         }
@@ -305,6 +302,10 @@ struct BackupMainView: View {
         groupedFiles = scheduler.scanBackupFiles()
     }
 
+    private func refreshAfterDelay() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) { refreshFiles() }
+    }
+
     private func runAdHocBackup() {
         guard let favorite = adHocFavorite else { return }
         adHocRunning = true
@@ -322,7 +323,6 @@ struct BackupMainView: View {
                 if result.success, let path = result.filePath {
                     statusMessage = "Backup saved: \((path as NSString).lastPathComponent)"
                     refreshFiles()
-                    // Auto-select the new file
                     if let item = BackupFileItem.parse(url: URL(fileURLWithPath: path)) {
                         selection = .file(item)
                     }
@@ -334,7 +334,6 @@ struct BackupMainView: View {
     }
 
     private func restoreFile(_ file: BackupFileItem) {
-        // Find the favorite that matches this device name
         restoreFile = file
         restoreTarget = favoritesStore.favorites.first(where: { $0.name == file.deviceName })
         restoreDeviceType = .fortigate
